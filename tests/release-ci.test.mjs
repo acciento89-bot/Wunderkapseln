@@ -52,12 +52,12 @@ test('feature-branch CI performs a signing-free iOS simulator build on macOS 26'
   assert.doesNotMatch(ios, /archive|exportArchive|notary|fastlane|eas submit/i);
 });
 
-test('0.5.0 increments both native build numbers while preserving Apple and Android identities', () => {
+test('Build 9 advances iOS while Android remains at 8 until Play Console inspection', () => {
   const pkg = JSON.parse(read('package.json'));
   const expo = JSON.parse(read('app.json')).expo;
   assert.equal(pkg.version, '0.5.0');
   assert.equal(expo.version, '0.5.0');
-  assert.equal(expo.ios.buildNumber, '8');
+  assert.equal(expo.ios.buildNumber, '9');
   assert.equal(expo.android.versionCode, 8);
   assert.equal(expo.ios.bundleIdentifier, 'com.kamilunavo.wondercaps');
   assert.equal(expo.android.package, 'com.kamilunavo.wunderkapseln');
