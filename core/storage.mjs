@@ -9,6 +9,7 @@ export function decodeSave(text) {
   try {
     const e=JSON.parse(text);if(e.version!==1||typeof e.payload!=='string'||checksum(e.payload)!==e.checksum) return null;
     const s=JSON.parse(e.payload);
+    if(s?.profile?.appliedPurchaseIds===undefined)s.profile.appliedPurchaseIds=[];
     if(!validateProfile(s.profile)||!Number.isInteger(s.attempt)||s.attempt<0||s.attempt>1000000||typeof s.protectedAttempt!=='boolean'||typeof s.settled!=='boolean') return null;
     if(s.game!==null&&(!validateGame(s.game)||s.game.levelId>s.profile.unlocked)) return null;
     if(s.game&&((s.game.status==='playing')===s.settled)) return null;
