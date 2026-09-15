@@ -2,7 +2,7 @@
 
 ## Goal
 
-Ship the three existing consumable products through Apple In-App Purchase and Google Play Billing without changing gameplay, art, audio, or established life and active-time rules. GitHub is the authoritative source and CI handoff point. Apple Build 9 is archived, signed, and uploaded to TestFlight through the connected Mac bridge with no review submission. Android reaches internal testing, while production remains an unsubmitted draft.
+Ship the three existing consumable products through Apple In-App Purchase and Google Play Billing without changing gameplay, art, audio, or established life and active-time rules. GitHub is the authoritative source and CI handoff point. Apple Build 9 is archived, signed, and uploaded to TestFlight through the existing GitHub Bridge in `acciento89-bot/onemorefloor`, with no review submission. Android reaches internal testing, while production remains an unsubmitted draft.
 
 ## Fixed identities and release boundaries
 
@@ -93,7 +93,7 @@ German and English dictionaries remain key-identical. Accessibility labels annou
 
 Implementation follows red-green-refactor. Automated tests cover catalog mapping, dynamic-price rendering, cancel/pending/network states, server rejection, duplicate callbacks, restart redelivery, local-save failure, capacity deferral, and exactly-once allocation. Existing reserve-life and active-time tests remain unchanged and passing.
 
-Required gates include the full Node suite, campaign validation, documentation checks, source/build audit, Android and iOS JavaScript exports, Android release AAB build, package/version/signature inspection, and GitHub status checks for the exact commit. The connected Mac bridge checks out that exact commit and performs the signed iOS archive and upload with the existing local signing configuration.
+Required gates include the full Node suite, campaign validation, documentation checks, source/build audit, Android and iOS JavaScript exports, Android release AAB build, package/version/signature inspection, and GitHub status checks for the exact commit. The GitHub Bridge checks out that exact WonderCaps commit and performs the signed iOS archive and upload with its protected App Store Connect secrets.
 
 Store acceptance requires real Apple Sandbox/TestFlight and Google license-tester cases for success, cancellation, pending, network interruption before and after verification, duplicate delivery, restart before finish, and all three products. Console metadata must match identifiers and consumable type. Evidence must record exact build/version, artifact hashes, track state, and actions deliberately not performed.
 
@@ -104,7 +104,7 @@ Store acceptance requires real Apple Sandbox/TestFlight and Google license-teste
 3. Implement and deploy verification functions against sandbox/test environments.
 4. Integrate the tested client adapter and purchase UI.
 5. Push the reviewed feature commit to GitHub and require all automated/native CI gates for that exact SHA.
-6. Through the connected Mac bridge, fetch the exact GitHub SHA, preserve the existing local signing configuration, test Apple Sandbox/TestFlight, and create/upload iOS Build 9 without review submission.
+6. Through the existing GitHub Bridge workflow, fetch the exact GitHub SHA, test Apple Sandbox/TestFlight, and create/upload iOS Build 9 without review submission. The workflow must propagate a failed archive, export, or uploader exit code instead of reporting a false-green run.
 7. Inspect Google Play package, version codes, products, and tracks before selecting an artifact.
 8. Upload or reuse the validated signed AAB, publish it to internal testing, and confirm tester availability.
 9. Prepare the identical artifact in production only as an unsubmitted draft, with no rollout or production review action.
