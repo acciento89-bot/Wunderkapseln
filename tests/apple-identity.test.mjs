@@ -41,6 +41,10 @@ test('the Apple-only identity change preserves Android package, Expo slug and re
 test('identity gate accepts different approved platform identifiers', () => {
   assert.deepEqual(checkAppIdentity(pkg, approved()), []);
 });
+test('identity gate permits independently monotonic iOS and Android build numbers', () => {
+  const config=approved();config.ios.buildNumber='9';config.android.versionCode=8;
+  assert.deepEqual(checkAppIdentity(pkg,config),[]);
+});
 test('identity gate rejects an iOS regression to the former Android identifier', () => {
   const config = approved(); config.ios.bundleIdentifier = 'com.kamilunavo.wunderkapseln';
   assert.ok(checkAppIdentity(pkg, config).includes('application_id_mismatch'));
