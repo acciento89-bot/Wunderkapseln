@@ -55,7 +55,7 @@ test('bootstrap is never implicitly chosen for a missing or inconsistent lockfil
 test('project configuration must match each approved platform identity and version', () => {
   const expo = { version: '0.4.0', icon: './assets/icon.png', splash: { image: './assets/icon.png' }, ios: { bundleIdentifier: 'com.kamilunavo.wondercaps', buildNumber: '4', infoPlist: { CFBundleDisplayName: 'WonderCaps' } }, android: { package: 'com.kamilunavo.wunderkapseln', versionCode: 4 } };
   assert.deepEqual(policy('checkAppIdentity', pkg, expo), []);
-  expo.android.package = 'com.example.app'; expo.splash.image = './other.png'; expo.ios.buildNumber = '5';
+  expo.android.package = 'com.example.app'; expo.splash.image = './other.png'; expo.ios.buildNumber = 'invalid';
   const errors = policy('checkAppIdentity', pkg, expo);
   assert.ok(errors.includes('application_id_mismatch'));
   assert.ok(errors.includes('icon_splash_mismatch'));
