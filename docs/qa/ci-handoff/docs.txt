@@ -1,0 +1,5 @@
+
+> wunderkapseln@0.5.0 check:docs
+> node tools/check-docs.mjs
+
+31 Markdown documents verified; links valid; Android/Apple DE/EN metadata within field limits; Apple SKU and bundle matched locally; version 0.5.0; drafts not submitted.

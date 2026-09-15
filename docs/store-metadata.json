@@ -1,0 +1,51 @@
+{
+  "status": "draft_not_submitted",
+  "version": "0.5.0",
+  "de": {
+    "name": "Wunderkapseln",
+    "subtitle": "Match-3 trifft Miniaturwelten",
+    "shortDescription": "Kombiniere Steine und erwecke kleine Welten unter Glas zum Leben.",
+    "promotionalText": "Entdecke 12 Miniaturwelten, erspiele Wunderzuege und lass neue Details erwachen. Ein farbenfrohes Match-3-Abenteuer mit 480 Levels.",
+    "keywords": "puzzle,kombinieren,glas,welten,entspannen,abenteuer,steine,offline,farben",
+    "description": "Kleine Welten. Grosse Wunder.\n\nIn Wunderkapseln kombinierst du bunte Spielsteine und erweckst Miniaturwelten unter Glas zum Leben. Vom Sternengarten ueber den Wolkenhafen bis zum Aurorapalast wartet hinter jeder Kapsel ein neuer Ort.\n\n480 Levels in 12 Welten\nSammle passende Steine, loese Frostfelder und erreiche deine Ziele innerhalb der verfuegbaren Zuege. Mit groesseren Kombinationen erzeugst du besondere Steine und Kettenreaktionen.\n\nDein erspielter Wunderzug\nLade deine Faehigkeit durch gutes Kombinieren auf. Wind, Flut oder Blueten helfen dir passend zur jeweiligen Welt. Du entscheidest, wann du dein Wunder einsetzt.\n\nSieh deine Welt wachsen\nNach acht unterschiedlichen Level-Siegen erwacht jeweils ein neues Detail. Bruecken, Lichter und kleine Bauwerke machen deinen Fortschritt sichtbar.\n\nSpiele in deinem Tempo\nDie Kampagne funktioniert offline. Ein laufendes Level laesst sich fortsetzen. Ton, reduzierte Bewegung und Sprache kannst du in den Einstellungen anpassen. Deutsch und Englisch sind enthalten.\n\nKein Konto erforderlich. Der aktuelle Spielstand wird lokal auf deinem Geraet gespeichert. Eine geraeteuebergreifende Cloud-Sicherung ist nicht enthalten.",
+    "releaseNotes": "Technische Stabilisierung und Vorbereitung der nativen Android- und iOS-Buildkette."
+  },
+  "en": {
+    "name": "Wunderkapseln",
+    "subtitle": "Match-3 in miniature worlds",
+    "shortDescription": "Match colourful tiles and bring tiny worlds under glass to life.",
+    "promotionalText": "Explore 12 miniature worlds, earn Wonder Moves and reveal delightful details. A colourful match-3 adventure with 480 levels.",
+    "keywords": "puzzle,tiles,glass,garden,relaxing,adventure,offline,colour,collect",
+    "description": "Tiny worlds. Wonderful moments.\n\nMatch colourful tiles and bring miniature worlds under glass to life. From Starlight Garden and Cloud Harbour to Aurora Palace, every capsule holds a new place to explore.\n\n480 levels across 12 worlds\nCollect matching tiles, clear frost and reach your goals within the available moves. Create special pieces with larger matches and set off playful chain reactions.\n\nEarn your Wonder Move\nCharge your ability through matching. Wind, tide or bloom helps you in a way that fits the world. Choose when to use your earned move.\n\nWatch your world grow\nEvery eight different level victories reveal a new detail. Bridges, lights and miniature landmarks turn progress into something you can see.\n\nPlay at your pace\nThe campaign works offline. Resume an unfinished level and adjust sound, reduced motion and language in Settings. German and English are included.\n\nNo account is required. Your current progress is stored locally on your device. Cross-device cloud backup is not included.",
+    "releaseNotes": "Technical stability improvements and preparation of the native Android and iOS build pipeline."
+  },
+  "defaultListingPlatform": "android",
+  "apple": {
+    "name": "WonderCaps",
+    "bundleIdentifier": "com.kamilunavo.wondercaps",
+    "sku": "wondercaps-001",
+    "recordStatus": "owner_reported_existing",
+    "verifiedInAppStoreConnect": false,
+    "access": "full_access_owner_reported",
+    "localizations": {
+      "de": {
+        "name": "WonderCaps",
+        "subtitle": "Match-3 trifft Miniaturwelten",
+        "shortDescription": "Kombiniere Steine und erwecke kleine Welten unter Glas zum Leben.",
+        "promotionalText": "Entdecke 12 Miniaturwelten, erspiele Wunderzuege und lass neue Details erwachen. Ein farbenfrohes Match-3-Abenteuer mit 480 Levels.",
+        "keywords": "puzzle,kombinieren,glas,welten,entspannen,abenteuer,steine,offline,farben",
+        "description": "Kleine Welten. Grosse Wunder.\n\nIn WonderCaps kombinierst du bunte Spielsteine und erweckst Miniaturwelten unter Glas zum Leben. Vom Sternengarten ueber den Wolkenhafen bis zum Aurorapalast wartet hinter jeder Kapsel ein neuer Ort.\n\n480 Levels in 12 Welten\nSammle passende Steine, loese Frostfelder und erreiche deine Ziele innerhalb der verfuegbaren Zuege. Mit groesseren Kombinationen erzeugst du besondere Steine und Kettenreaktionen.\n\nDein erspielter Wunderzug\nLade deine Faehigkeit durch gutes Kombinieren auf. Wind, Flut oder Blueten helfen dir passend zur jeweiligen Welt. Du entscheidest, wann du dein Wunder einsetzt.\n\nSieh deine Welt wachsen\nNach acht unterschiedlichen Level-Siegen erwacht jeweils ein neues Detail. Bruecken, Lichter und kleine Bauwerke machen deinen Fortschritt sichtbar.\n\nSpiele in deinem Tempo\nDie Kampagne funktioniert offline. Ein laufendes Level laesst sich fortsetzen. Ton, reduzierte Bewegung und Sprache kannst du in den Einstellungen anpassen. Deutsch und Englisch sind enthalten.\n\nKein Konto erforderlich. Der aktuelle Spielstand wird lokal auf deinem Geraet gespeichert. Eine geraeteuebergreifende Cloud-Sicherung ist nicht enthalten.",
+        "releaseNotes": "Technische Stabilisierung und Vorbereitung der nativen Android- und iOS-Buildkette."
+      },
+      "en": {
+        "name": "WonderCaps",
+        "subtitle": "Match-3 in miniature worlds",
+        "shortDescription": "Match colourful tiles and bring tiny worlds under glass to life.",
+        "promotionalText": "Explore 12 miniature worlds, earn Wonder Moves and reveal delightful details. A colourful match-3 adventure with 480 levels.",
+        "keywords": "puzzle,tiles,glass,garden,relaxing,adventure,offline,colour,collect",
+        "description": "Tiny worlds. Wonderful moments.\n\nIn WonderCaps, match colourful tiles and bring miniature worlds under glass to life. From Starlight Garden and Cloud Harbour to Aurora Palace, every capsule holds a new place to explore.\n\n480 levels across 12 worlds\nCollect matching tiles, clear frost and reach your goals within the available moves. Create special pieces with larger matches and set off playful chain reactions.\n\nEarn your Wonder Move\nCharge your ability through matching. Wind, tide or bloom helps you in a way that fits the world. Choose when to use your earned move.\n\nWatch your world grow\nEvery eight different level victories reveal a new detail. Bridges, lights and miniature landmarks turn progress into something you can see.\n\nPlay at your pace\nThe campaign works offline. Resume an unfinished level and adjust sound, reduced motion and language in Settings. German and English are included.\n\nNo account is required. Your current progress is stored locally on your device. Cross-device cloud backup is not included.",
+        "releaseNotes": "Technical stability improvements and preparation of the native Android and iOS build pipeline."
+      }
+    }
+  }
+}

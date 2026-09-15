@@ -1,0 +1,691 @@
+TAP version 13
+# Subtest: bootstrap invokes the reusable native verification directly after its lock commit
+not ok 1 - bootstrap invokes the reusable native verification directly after its lock commit
+  ---
+  duration_ms: 1.70012
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:57:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - 'string'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'string'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:58:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: every verifier checkout and shared lock artifact use the exact selected source SHA
+not ok 2 - every verifier checkout and shared lock artifact use the exact selected source SHA
+  ---
+  duration_ms: 0.300916
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:69:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    rules-and-preview
+    + actual - expected
+    
+    + undefined
+    - '${{ inputs.source_sha || github.sha }}'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '${{ inputs.source_sha || github.sha }}'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:72:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: macOS packaging does not depend on mapfile or select the first of several apps
+not ok 3 - macOS packaging does not depend on mapfile or select the first of several apps
+  ---
+  duration_ms: 0.657254
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:85:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input was expected to not match the regular expression /\bmapfile\b|head -n 1/. Input:
+    
+    '\n' +
+      '\n' +
+      '\n' +
+      'npm run native:install\n' +
+      'npm run assets\n' +
+      'set -euo pipefail\n' +
+      `version="$(xcodebuild -version | awk '/Xcode/{print $2}')"\n` +
+      `python3 - "$version" <<'PY'\n` +
+      'import sys\n' +
+      "parts = tuple(int(x) for x in sys.argv[1].split('.')[:2])\n" +
+      'if parts < (26, 2):\n' +
+      "    raise SystemExit(f'Xcode 26.2+ required, found {sys.argv[1]}')\n" +
+      'PY\n' +
+      '\n' +
+      'npx --no-install expo prebuild --platform ios --no-install\n' +
+      'pod install\n' +
+      'set -euo pipefail\n' +
+      `workspace="$(find ios -maxdepth 1 -name '*.xcworkspace' -type d | head -n 1)"\n` +
+      `project="$(find ios -maxdepth 1 -name '*.xcodeproj' -type d | head -n 1)"\n` +
+      'test -n "$workspace"\n' +
+      'test -n "$project"\n' +
+      'scheme="$(basename "$project" .xcodeproj)"\n' +
+      'xcodebuild \\\n' +
+      '  -workspace "$workspace" \\\n' +
+      '  -scheme "$scheme" \\\n' +
+      '  -configuration Release \\\n' +
+      '  -sdk iphonesimulator \\\n' +
+      '  -derivedDataPath dist/ios-derived \\\n' +
+      '  CODE_SIGNING_ALLOWED=NO \\\n' +
+      '  CODE_SIGNING_REQUIRED=NO \\\n' +
+      '  build\n' +
+      '\n' +
+      'set -euo pipefail\n' +
+      'mkdir -p dist/build-evidence\n' +
+      "mapfile -t apps < <(find dist/ios-derived/Build/Products/Release-iphonesimulator -maxdepth 1 -name '*.app' -type d)\n" +
+      'test "${#apps[@]}" -eq 1\n' +
+      'app="${apps[0]}"\n' +
+      'python3 tools/audit-native.py --ios "$app/Info.plist" > dist/build-evidence/ios-simulator-capabilities.json\n' +
+      `/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist" | grep -Fx 'com.kamilunavo.wondercaps'\n` +
+      'ditto -c -k --sequesterRsrc --keepParent "$app" dist/WonderCaps-iOS-Simulator.zip\n' +
+      'shasum -a 256 dist/WonderCaps-iOS-Simulator.zip > dist/build-evidence/ios-simulator.sha256\n' +
+      '\n'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    
+    
+    
+    npm run native:install
+    npm run assets
+    set -euo pipefail
+    version="$(xcodebuild -version | awk '/Xcode/{print $2}')"
+    python3 - "$version" <<'PY'
+    import sys
+    parts = tuple(int(x) for x in sys.argv[1].split('.')[:2])
+    if parts < (26, 2):
+        raise SystemExit(f'Xcode 26.2+ required, found {sys.argv[1]}')
+    PY
+    
+    npx --no-install expo prebuild --platform ios --no-install
+    pod install
+    set -euo pipefail
+    workspace="$(find ios -maxdepth 1 -name '*.xcworkspace' -type d | head -n 1)"
+    project="$(find ios -maxdepth 1 -name '*.xcodeproj' -type d | head -n 1)"
+    test -n "$workspace"
+    test -n "$project"
+    scheme="$(basename "$project" .xcodeproj)"
+    xcodebuild \
+      -workspace "$workspace" \
+      -scheme "$scheme" \
+      -configuration Release \
+      -sdk iphonesimulator \
+      -derivedDataPath dist/ios-derived \
+      CODE_SIGNING_ALLOWED=NO \
+      CODE_SIGNING_REQUIRED=NO \
+      build
+    
+    set -euo pipefail
+    mkdir -p dist/build-evidence
+    mapfile -t apps < <(find dist/ios-derived/Build/Products/Release-iphonesimulator -maxdepth 1 -name '*.app' -type d)
+    test "${#apps[@]}" -eq 1
+    app="${apps[0]}"
+    python3 tools/audit-native.py --ios "$app/Info.plist" > dist/build-evidence/ios-simulator-capabilities.json
+    /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist" | grep -Fx 'com.kamilunavo.wondercaps'
+    ditto -c -k --sequesterRsrc --keepParent "$app" dist/WonderCaps-iOS-Simulator.zip
+    shasum -a 256 dist/WonderCaps-iOS-Simulator.zip > dist/build-evidence/ios-simulator.sha256
+    
+    
+  operator: 'doesNotMatch'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:88:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: native build failures retain diagnostic evidence without uploading an unchecked binary
+not ok 4 - native build failures retain diagnostic evidence without uploading an unchecked binary
+  ---
+  duration_ms: 0.189722
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:92:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    android-preview
+    + actual - expected
+    
+    + undefined
+    - 'always()'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'always()'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:96:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: lock handoff publishes only the lock and returns a verified child commit
+not ok 5 - lock handoff publishes only the lock and returns a verified child commit
+  ---
+  duration_ms: 42.638836
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:103:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    lock handoff implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'function'
+  actual: 'undefined'
+  operator: 'strictEqual'
+  stack: |-
+    publish (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:49:10)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:105:18)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: bootstrap rejects tracked changes outside the lock before committing
+not ok 6 - bootstrap rejects tracked changes outside the lock before committing
+  ---
+  duration_ms: 35.513162
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:117:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /outside_lockfile/. Input:
+    
+    'AssertionError [ERR_ASSERTION]: lock handoff implementation is missing\n' +
+      '+ actual - expected\n' +
+      '\n' +
+      "+ 'undefined'\n" +
+      "- 'function'\n"
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    lock handoff implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  stack: |-
+    publish (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:49:10)
+    file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:120:23
+    getActual (node:assert:531:5)
+    Function.throws (node:assert:677:24)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:120:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:120:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: bootstrap rejects staged unrelated changes without changing the index
+not ok 7 - bootstrap rejects staged unrelated changes without changing the index
+  ---
+  duration_ms: 42.411218
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:124:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /dirty_index/. Input:
+    
+    'AssertionError [ERR_ASSERTION]: lock handoff implementation is missing\n' +
+      '+ actual - expected\n' +
+      '\n' +
+      "+ 'undefined'\n" +
+      "- 'function'\n"
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    lock handoff implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  stack: |-
+    publish (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:49:10)
+    file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:127:23
+    getActual (node:assert:531:5)
+    Function.throws (node:assert:677:24)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:127:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:127:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: bootstrap rejects an unexpected source commit
+not ok 8 - bootstrap rejects an unexpected source commit
+  ---
+  duration_ms: 38.680357
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:131:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /source_sha_mismatch/. Input:
+    
+    'AssertionError [ERR_ASSERTION]: lock handoff implementation is missing\n' +
+      '+ actual - expected\n' +
+      '\n' +
+      "+ 'undefined'\n" +
+      "- 'function'\n"
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    lock handoff implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  stack: |-
+    publish (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:49:10)
+    file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:133:23
+    getActual (node:assert:531:5)
+    Function.throws (node:assert:677:24)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:133:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:133:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: bootstrap never replaces an already committed lock
+not ok 9 - bootstrap never replaces an already committed lock
+  ---
+  duration_ms: 45.959678
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:136:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /base_already_has_lock/. Input:
+    
+    'AssertionError [ERR_ASSERTION]: lock handoff implementation is missing\n' +
+      '+ actual - expected\n' +
+      '\n' +
+      "+ 'undefined'\n" +
+      "- 'function'\n"
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    lock handoff implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  stack: |-
+    publish (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:49:10)
+    file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:139:23
+    getActual (node:assert:531:5)
+    Function.throws (node:assert:677:24)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:139:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:139:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: bootstrap rejects invalid lock metadata
+not ok 10 - bootstrap rejects invalid lock metadata
+  ---
+  duration_ms: 35.526332
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:142:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /unsupported_lockfile/. Input:
+    
+    'AssertionError [ERR_ASSERTION]: lock handoff implementation is missing\n' +
+      '+ actual - expected\n' +
+      '\n' +
+      "+ 'undefined'\n" +
+      "- 'function'\n"
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    lock handoff implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  stack: |-
+    publish (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:49:10)
+    file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:144:23
+    getActual (node:assert:531:5)
+    Function.throws (node:assert:677:24)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:144:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:144:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: bootstrap refuses other branch names before making a commit
+not ok 11 - bootstrap refuses other branch names before making a commit
+  ---
+  duration_ms: 41.138241
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:148:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'function'
+  actual: 'undefined'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:150:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: a concurrent remote commit is not overwritten by the lock bootstrap
+not ok 12 - a concurrent remote commit is not overwritten by the lock bootstrap
+  ---
+  duration_ms: 79.995732
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:155:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /non-fast-forward|rejected|fetch first/i. Input:
+    
+    'AssertionError [ERR_ASSERTION]: lock handoff implementation is missing\n' +
+      '+ actual - expected\n' +
+      '\n' +
+      "+ 'undefined'\n" +
+      "- 'function'\n"
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    lock handoff implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  stack: |-
+    publish (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:49:10)
+    file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:164:23
+    getActual (node:assert:531:5)
+    Function.throws (node:assert:677:24)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:164:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:164:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: source guard rejects mutable names instead of full commit hashes
+not ok 13 - source guard rejects mutable names instead of full commit hashes
+  ---
+  duration_ms: 37.384757
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:168:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /invalid_source_sha/. Input:
+    
+    'AssertionError [ERR_ASSERTION]: source provenance implementation is missing\n' +
+      '+ actual - expected\n' +
+      '\n' +
+      "+ 'undefined'\n" +
+      "- 'function'\n"
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    source provenance implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  stack: |-
+    inspect (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:53:10)
+    file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:170:23
+    getActual (node:assert:531:5)
+    Function.throws (node:assert:677:24)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:170:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:170:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: source guard rejects a child commit that changes source code as well as the lock
+not ok 14 - source guard rejects a child commit that changes source code as well as the lock
+  ---
+  duration_ms: 44.567334
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:173:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /not_lock_only/. Input:
+    
+    'AssertionError [ERR_ASSERTION]: source provenance implementation is missing\n' +
+      '+ actual - expected\n' +
+      '\n' +
+      "+ 'undefined'\n" +
+      "- 'function'\n"
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: |-
+    source provenance implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  stack: |-
+    inspect (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:53:10)
+    file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:176:23
+    getActual (node:assert:531:5)
+    Function.throws (node:assert:677:24)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:176:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+  operator: 'throws'
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:176:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: source guard accepts a regular checkout without inventing a lock or build result
+not ok 15 - source guard accepts a regular checkout without inventing a lock or build result
+  ---
+  duration_ms: 40.894359
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:179:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    source provenance implementation is missing
+    + actual - expected
+    
+    + 'undefined'
+    - 'function'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'function'
+  actual: 'undefined'
+  operator: 'strictEqual'
+  stack: |-
+    inspect (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:53:10)
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:181:18)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: portable artifact discovery handles spaces and fails on zero or multiple outputs
+not ok 16 - portable artifact discovery handles spaces and fails on zero or multiple outputs
+  ---
+  duration_ms: 0.645477
+  type: 'test'
+  location: '/mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:188:1'
+  failureType: 'testCodeFailure'
+  error: 'portable artifact selector is missing'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///mnt/data/work/WonderCaps-native-build/tests/ci-handoff.test.mjs:193:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 0
+# fail 16
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1748.403537

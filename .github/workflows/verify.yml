@@ -1,0 +1,318 @@
+name: Verify WonderCaps 0.5 native release path
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      source_sha:
+        description: Exact lock-only child commit emitted by bootstrap-lock
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: wondercaps-verify-${{ github.workflow }}-${{ github.ref }}-${{ inputs.source_sha || github.sha }}
+  cancel-in-progress: true
+env:
+  CI: 'true'
+  EXPO_NO_TELEMETRY: '1'
+jobs:
+  rules-and-preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.source_sha || github.sha }}
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify immutable source and lock provenance
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          BOOTSTRAP_BASE_SHA: ${{ inputs.source_sha && github.sha || '' }}
+        run: node tools/ci-source.mjs verify
+      - run: node tools/audio-assets.mjs
+      - run: npm test
+      - run: npm run check:build -- --source-only
+      - run: npm run check:docs
+      - run: npm run validate:levels
+      - run: npm run audit:campaign
+      - run: npm run preview:bundle
+      - run: npm run audio:preview
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WonderCaps-browser-preview
+          path: |
+            dist/Wunderkapseln-preview.html
+            dist/Wunderkapseln-soundcheck.html
+            dist/Wunderkapseln-ability-showcase.wav
+          if-no-files-found: error
+          retention-days: 14
+
+  native-resolution:
+    needs: [rules-and-preview]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.source_sha || github.sha }}
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify immutable source and lock provenance
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          BOOTSTRAP_BASE_SHA: ${{ inputs.source_sha && github.sha || '' }}
+        run: node tools/ci-source.mjs verify
+      - name: Require the committed dependency lock
+        shell: bash
+        run: test -f package-lock.json
+      - run: npm run native:install
+      - run: npm run check:build
+      - run: npx --no-install expo install --check
+      - name: Keep the exact lock for every downstream platform job
+        uses: actions/upload-artifact@v4
+        with:
+          name: wondercaps-lock-${{ inputs.source_sha || github.sha }}
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Save installation evidence even when resolution fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wondercaps-dependency-evidence-${{ inputs.source_sha || github.sha }}
+          path: dist/build-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+
+  native-bundles:
+    needs: [rules-and-preview, native-resolution]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.source_sha || github.sha }}
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify immutable source and lock provenance
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          BOOTSTRAP_BASE_SHA: ${{ inputs.source_sha && github.sha || '' }}
+        run: node tools/ci-source.mjs verify
+      - uses: actions/download-artifact@v4
+        with:
+          name: wondercaps-lock-${{ inputs.source_sha || github.sha }}
+          path: .
+      - name: Verify the downloaded lock against its commit
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          BOOTSTRAP_BASE_SHA: ${{ inputs.source_sha && github.sha || '' }}
+        run: node tools/ci-source.mjs verify
+      - run: npm run native:install
+      - run: npx --no-install expo install --check
+      - run: npm run check:source
+      - run: npm run assets
+      - run: npm run check:art
+      - run: npx --no-install expo export --platform android --output-dir dist/android
+      - run: npx --no-install expo export --platform ios --output-dir dist/ios
+      - name: Inspect generated iOS capabilities; this is not an Xcode build
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --no-install expo prebuild --platform ios --no-install
+          plist="$(node tools/find-one-artifact.mjs ios .plist file 2)"
+          mkdir -p dist/build-evidence
+          python3 tools/audit-native.py --ios "$plist" --allow-unresolved-identity > dist/build-evidence/ios-capabilities.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Native-JavaScript-bundles-not-installable-apps
+          path: |
+            dist/android/
+            dist/ios/
+            dist/build-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+  android-preview:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/playable-miniature-worlds'
+    needs: [rules-and-preview, native-resolution, native-bundles]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.source_sha || github.sha }}
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify immutable source and lock provenance
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          BOOTSTRAP_BASE_SHA: ${{ inputs.source_sha && github.sha || '' }}
+        run: node tools/ci-source.mjs verify
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/download-artifact@v4
+        with:
+          name: wondercaps-lock-${{ inputs.source_sha || github.sha }}
+          path: .
+      - name: Verify the downloaded lock against its commit
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          BOOTSTRAP_BASE_SHA: ${{ inputs.source_sha && github.sha || '' }}
+        run: node tools/ci-source.mjs verify
+      - run: npm run native:install
+      - run: npm run assets
+      - name: Check hosted Android SDK and install API 36 build tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk="${ANDROID_HOME:?Android SDK is required on the hosted runner}"
+          manager="$sdk/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$manager"
+          set +o pipefail
+          yes | "$manager" --licenses > /dev/null
+          set -o pipefail
+          "$manager" 'platforms;android-36' 'build-tools;36.0.0'
+      - run: npx --no-install expo prebuild --platform android --no-install
+      - name: Assemble internal release-mode APK with generated development key
+        working-directory: android
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ../dist/build-evidence
+          ./gradlew assembleRelease --no-daemon --console=plain 2>&1 | tee ../dist/build-evidence/gradle.log
+      - name: Audit packaged manifest and verify development signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/build-evidence
+          apk="$(node tools/find-one-artifact.mjs android/app/build/outputs/apk/release .apk file)"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "$apk" > dist/build-evidence/android-packaged-manifest.xml
+          python3 tools/audit-native.py --android dist/build-evidence/android-packaged-manifest.xml > dist/build-evidence/android-capabilities.json
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$apk" > dist/build-evidence/android-signature.txt
+          grep -q 'CN=Android Debug' dist/build-evidence/android-signature.txt
+          sha256sum "$apk" > dist/build-evidence/android-apk.sha256
+      - name: Keep native failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wondercaps-android-evidence-${{ inputs.source_sha || github.sha }}
+          path: dist/build-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wunderkapseln-INTERNAL-ONLY-APK
+          path: |
+            android/app/build/outputs/apk/release/*.apk
+            dist/build-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+  ios-simulator:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/playable-miniature-worlds'
+    needs: [rules-and-preview, native-resolution, native-bundles]
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.source_sha || github.sha }}
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify immutable source and lock provenance
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          BOOTSTRAP_BASE_SHA: ${{ inputs.source_sha && github.sha || '' }}
+        run: node tools/ci-source.mjs verify
+      - uses: actions/download-artifact@v4
+        with:
+          name: wondercaps-lock-${{ inputs.source_sha || github.sha }}
+          path: .
+      - name: Verify the downloaded lock against its commit
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          BOOTSTRAP_BASE_SHA: ${{ inputs.source_sha && github.sha || '' }}
+        run: node tools/ci-source.mjs verify
+      - run: npm run native:install
+      - run: npm run assets
+      - name: Require Xcode 26.2 or newer
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(xcodebuild -version | awk '/Xcode/{print $2}')"
+          python3 - "$version" <<'PY'
+          import sys
+          parts = tuple(int(x) for x in sys.argv[1].split('.')[:2])
+          if parts < (26, 2):
+              raise SystemExit(f'Xcode 26.2+ required, found {sys.argv[1]}')
+          PY
+      - run: npx --no-install expo prebuild --platform ios --no-install
+      - name: Install iOS pods
+        working-directory: ios
+        run: pod install
+      - name: Build signing-free iOS Simulator app
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/build-evidence
+          workspace="$(node tools/find-one-artifact.mjs ios .xcworkspace directory)"
+          project="$(node tools/find-one-artifact.mjs ios .xcodeproj directory)"
+          scheme="$(basename "$project" .xcodeproj)"
+          xcodebuild \
+            -workspace "$workspace" \
+            -scheme "$scheme" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -derivedDataPath dist/ios-derived \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build 2>&1 | tee dist/build-evidence/xcodebuild.log
+      - name: Audit and package simulator build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/build-evidence
+          app="$(node tools/find-one-artifact.mjs dist/ios-derived/Build/Products/Release-iphonesimulator .app directory)"
+          python3 tools/audit-native.py --ios "$app/Info.plist" > dist/build-evidence/ios-simulator-capabilities.json
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Info.plist" | grep -Fx 'com.kamilunavo.wondercaps'
+          ditto -c -k --sequesterRsrc --keepParent "$app" dist/WonderCaps-iOS-Simulator.zip
+          shasum -a 256 dist/WonderCaps-iOS-Simulator.zip > dist/build-evidence/ios-simulator.sha256
+      - name: Keep native failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wondercaps-ios-evidence-${{ inputs.source_sha || github.sha }}
+          path: dist/build-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WonderCaps-INTERNAL-ONLY-iOS-Simulator
+          path: |
+            dist/WonderCaps-iOS-Simulator.zip
+            dist/build-evidence/ios-simulator-capabilities.json
+            dist/build-evidence/ios-simulator.sha256
+          if-no-files-found: error
+          retention-days: 14

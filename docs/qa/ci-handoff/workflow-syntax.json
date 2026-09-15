@@ -1,0 +1,14 @@
+[
+  {
+    "workflow": ".github/workflows/bootstrap-lock.yml",
+    "yamlParsed": true,
+    "shellBlocksSyntaxChecked": 5,
+    "remoteExecuted": false
+  },
+  {
+    "workflow": ".github/workflows/verify.yml",
+    "yamlParsed": true,
+    "shellBlocksSyntaxChecked": 41,
+    "remoteExecuted": false
+  }
+]

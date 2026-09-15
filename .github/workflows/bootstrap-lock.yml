@@ -1,0 +1,68 @@
+name: Bootstrap WonderCaps native lock
+
+on:
+  push:
+    branches: [feature/playable-miniature-worlds]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wondercaps-lock-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bootstrap-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      source_sha: ${{ steps.commit.outputs.source_sha }}
+      created: ${{ steps.commit.outputs.created }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Detect whether the reviewed lock is missing
+        id: lock
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            echo 'required=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'required=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Resolve native dependencies exactly once
+        if: steps.lock.outputs.required == 'true'
+        run: npm run native:install -- --bootstrap
+      - name: Validate resolved dependency set
+        if: steps.lock.outputs.required == 'true'
+        run: |
+          npm run check:build
+          npx --no-install expo install --check
+      - name: Refuse bootstrap side effects outside the lockfile
+        if: steps.lock.outputs.required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code -- package.json app.json
+      - name: Commit only the generated package lock
+        id: commit
+        if: steps.lock.outputs.required == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/ci-source.mjs commit-lock
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+
+  verify-after-lock:
+    needs: bootstrap-lock
+    if: needs.bootstrap-lock.outputs.created == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/verify.yml
+    with:
+      source_sha: ${{ needs.bootstrap-lock.outputs.source_sha }}

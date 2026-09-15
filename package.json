@@ -1,0 +1,50 @@
+{
+  "name": "wunderkapseln",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "test": "node --test tests/*.test.mjs",
+    "preview": "node tools/serve.mjs",
+    "validate:levels": "node tools/validate-levels.mjs",
+    "assets": "node tools/assets.mjs && node tools/audio-assets.mjs",
+    "prebuild": "npm run assets && expo prebuild",
+    "export:android": "npm run assets && expo export --platform android",
+    "prestart": "npm run assets",
+    "preandroid": "npm run assets",
+    "preios": "npm run assets",
+    "preview:bundle": "node tools/bundle-preview.mjs",
+    "check:source": "node tools/check-source.mjs",
+    "export:ios": "npm run assets && expo export --platform ios",
+    "audio:assets": "node tools/audio-assets.mjs",
+    "check:art": "node tools/check-art.mjs",
+    "audit:campaign": "node tools/audit-balance.mjs",
+    "audit:visible": "node tools/audit-visible.mjs",
+    "audio:preview": "node tools/build-soundcheck.mjs",
+    "check:docs": "node tools/check-docs.mjs",
+    "check:build": "node tools/check-build.mjs",
+    "native:install": "node tools/native-install.mjs"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "expo": "55.0.31",
+    "expo-asset": "~55.0.20",
+    "expo-audio": "~55.0.16",
+    "expo-system-ui": "~55.0.22",
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "react-native-safe-area-context": "~5.6.2",
+    "react-native-svg": "15.15.3"
+  },
+  "devDependencies": {
+    "sharp": "0.34.5",
+    "typescript": "~5.9.2"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

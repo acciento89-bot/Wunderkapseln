@@ -1,0 +1,1256 @@
+
+> wunderkapseln@0.5.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: 14 original cues include distinct big ability and restoration effects
+ok 1 - 14 original cues include distinct big ability and restoration effects
+  ---
+  duration_ms: 200.517681
+  type: 'test'
+  ...
+# Subtest: single activated specials map to their own cue; two specials map to mega
+ok 2 - single activated specials map to their own cue; two specials map to mega
+  ---
+  duration_ms: 0.53295
+  type: 'test'
+  ...
+# Subtest: creating a special is not the same as activating it
+ok 3 - creating a special is not the same as activating it
+  ---
+  duration_ms: 0.159907
+  type: 'test'
+  ...
+# Subtest: directly swapped prism metadata survives suppression of automatic effects
+ok 4 - directly swapped prism metadata survives suppression of automatic effects
+  ---
+  duration_ms: 3.474911
+  type: 'test'
+  ...
+# Subtest: old special seen in both swap and frame metadata is counted once
+ok 5 - old special seen in both swap and frame metadata is counted once
+  ---
+  duration_ms: 0.378441
+  type: 'test'
+  ...
+# Subtest: two directly swapped specials receive the big combination cue
+ok 6 - two directly swapped specials receive the big combination cue
+  ---
+  duration_ms: 2.237456
+  type: 'test'
+  ...
+# Subtest: wind tide and bloom retain distinct metadata and cues
+ok 7 - wind tide and bloom retain distinct metadata and cues
+  ---
+  duration_ms: 4.139266
+  type: 'test'
+  ...
+# Subtest: ability and win remain separate; restoration follows the win
+ok 8 - ability and win remain separate; restoration follows the win
+  ---
+  duration_ms: 0.304952
+  type: 'test'
+  ...
+# Subtest: charge-ready only fires on a newly full playing board, never after the ability or a defeat
+ok 9 - charge-ready only fires on a newly full playing board, never after the ability or a defeat
+  ---
+  duration_ms: 0.410369
+  type: 'test'
+  ...
+# Subtest: delayed fanfares play once and ordinary state ticks do not reschedule them
+ok 10 - delayed fanfares play once and ordinary state ticks do not reschedule them
+  ---
+  duration_ms: 0.72155
+  type: 'test'
+  ...
+# Subtest: pause background mute and disposal cancel delayed audio without replay
+ok 11 - pause background mute and disposal cancel delayed audio without replay
+  ---
+  duration_ms: 0.420163
+  type: 'test'
+  ...
+# Subtest: new effect replaces old followups without cutting an already playing ability
+ok 12 - new effect replaces old followups without cutting an already playing ability
+  ---
+  duration_ms: 0.187798
+  type: 'test'
+  ...
+# Subtest: controller emits ability while animation is active, not only after resolution
+ok 13 - controller emits ability while animation is active, not only after resolution
+  ---
+  duration_ms: 637.458611
+  type: 'test'
+  ...
+# Subtest: animation duration is not deducted from active-play time after settling
+ok 14 - animation duration is not deducted from active-play time after settling
+  ---
+  duration_ms: 15.445636
+  type: 'test'
+  ...
+# Subtest: finishing an animation keeps charging subsequent real play time
+ok 15 - finishing an animation keeps charging subsequent real play time
+  ---
+  duration_ms: 4.326113
+  type: 'test'
+  ...
+# Subtest: activating a time pack does not charge time before activation
+ok 16 - activating a time pack does not charge time before activation
+  ---
+  duration_ms: 1.22743
+  type: 'test'
+  ...
+# Subtest: switching to reduced motion mid-animation does not retroactively bill animation time
+ok 17 - switching to reduced motion mid-animation does not retroactively bill animation time
+  ---
+  duration_ms: 3.098492
+  type: 'test'
+  ...
+# Subtest: world ability accounts for active time before, but not during, its animation
+ok 18 - world ability accounts for active time before, but not during, its animation
+  ---
+  duration_ms: 2.385196
+  type: 'test'
+  ...
+# Subtest: iOS source config uses the exact owner-supplied WonderCaps bundle identifier
+ok 19 - iOS source config uses the exact owner-supplied WonderCaps bundle identifier
+  ---
+  duration_ms: 1.126089
+  type: 'test'
+  ...
+# Subtest: iOS installed display name and bundle name use WonderCaps, not the repository title
+ok 20 - iOS installed display name and bundle name use WonderCaps, not the repository title
+  ---
+  duration_ms: 0.258333
+  type: 'test'
+  ...
+# Subtest: the Apple-only identity change preserves Android package, Expo slug and repository name
+ok 21 - the Apple-only identity change preserves Android package, Expo slug and repository name
+  ---
+  duration_ms: 0.14158
+  type: 'test'
+  ...
+# Subtest: identity gate accepts different approved platform identifiers
+ok 22 - identity gate accepts different approved platform identifiers
+  ---
+  duration_ms: 1.111979
+  type: 'test'
+  ...
+# Subtest: identity gate rejects an iOS regression to the former Android identifier
+ok 23 - identity gate rejects an iOS regression to the former Android identifier
+  ---
+  duration_ms: 0.297922
+  type: 'test'
+  ...
+# Subtest: identity gate does not permit an unintended Android rename to the Apple identifier
+ok 24 - identity gate does not permit an unintended Android rename to the Apple identifier
+  ---
+  duration_ms: 0.197232
+  type: 'test'
+  ...
+# Subtest: identity gate rejects a stale or absent Apple display name
+ok 25 - identity gate rejects a stale or absent Apple display name
+  ---
+  duration_ms: 0.316449
+  type: 'test'
+  ...
+# Subtest: an Info.plist override cannot silently replace the approved iOS identifier
+ok 26 - an Info.plist override cannot silently replace the approved iOS identifier
+  ---
+  duration_ms: 0.203722
+  type: 'test'
+  ...
+# Subtest: Apple SKU is recorded as store metadata, never as a native identifier or payment SKU
+ok 27 - Apple SKU is recorded as store metadata, never as a native identifier or payment SKU
+  ---
+  duration_ms: 0.616374
+  type: 'test'
+  ...
+# Subtest: German and English Apple listing drafts use WonderCaps while Android drafts are retained
+ok 28 - German and English Apple listing drafts use WonderCaps while Android drafts are retained
+  ---
+  duration_ms: 0.676012
+  type: 'test'
+  ...
+# Subtest: resolved Apple plist accepts the approved identifier and display name without claiming a build
+ok 29 - resolved Apple plist accepts the approved identifier and display name without claiming a build
+  ---
+  duration_ms: 673.788393
+  type: 'test'
+  ...
+# Subtest: the old iOS identifier is rejected even in config-only mode
+ok 30 - the old iOS identifier is rejected even in config-only mode
+  ---
+  duration_ms: 579.92434
+  type: 'test'
+  ...
+# Subtest: missing or stale Apple display name fails native plist inspection
+ok 31 - missing or stale Apple display name fails native plist inspection
+  ---
+  duration_ms: 2184.93568
+  type: 'test'
+  ...
+# Subtest: unresolved Apple build variables still require explicit config-only inspection
+ok 32 - unresolved Apple build variables still require explicit config-only inspection
+  ---
+  duration_ms: 683.874965
+  type: 'test'
+  ...
+# Subtest: sound cues distinguish matches, chains, wonders and terminal outcomes
+ok 33 - sound cues distinguish matches, chains, wonders and terminal outcomes
+  ---
+  duration_ms: 0.798694
+  type: 'test'
+  ...
+# Subtest: feedback is emitted once per event, not once per controller tick
+ok 34 - feedback is emitted once per event, not once per controller tick
+  ---
+  duration_ms: 0.782029
+  type: 'test'
+  ...
+# Subtest: muting or backgrounding stops playback and never replays skipped cues
+ok 35 - muting or backgrounding stops playback and never replays skipped cues
+  ---
+  duration_ms: 0.946753
+  type: 'test'
+  ...
+# Subtest: result fanfare is allowed but pause and menus are silent
+ok 36 - result fanfare is allowed but pause and menus are silent
+  ---
+  duration_ms: 0.259975
+  type: 'test'
+  ...
+# Subtest: audio device errors do not escape into gameplay or unhandled rejections
+ok 37 - audio device errors do not escape into gameplay or unhandled rejections
+  ---
+  duration_ms: 0.328597
+  type: 'test'
+  ...
+# Subtest: legacy saves gain sound preference and a saved mute survives reload
+ok 38 - legacy saves gain sound preference and a saved mute survives reload
+  ---
+  duration_ms: 0.531207
+  type: 'test'
+  ...
+# Subtest: generated sounds are finite, bounded and contain audible PCM content
+ok 39 - generated sounds are finite, bounded and contain audible PCM content
+  ---
+  duration_ms: 140.211081
+  type: 'test'
+  ...
+# Subtest: valid moves emit a feedback event; invalid swaps emit none
+ok 40 - valid moves emit a feedback event; invalid swaps emit none
+  ---
+  duration_ms: 13.712807
+  type: 'test'
+  ...
+# Subtest: normal install refuses a missing lock before launching npm
+ok 41 - normal install refuses a missing lock before launching npm
+  ---
+  duration_ms: 45.194034
+  type: 'test'
+  ...
+# Subtest: explicit bootstrap dry run reports install and never mutates the directory
+ok 42 - explicit bootstrap dry run reports install and never mutates the directory
+  ---
+  duration_ms: 49.47547
+  type: 'test'
+  ...
+# Subtest: a malformed existing lock fails even when bootstrap is requested
+ok 43 - a malformed existing lock fails even when bootstrap is requested
+  ---
+  duration_ms: 39.153314
+  type: 'test'
+  ...
+# Subtest: source-only readiness reports the missing native resolution without claiming a build
+ok 44 - source-only readiness reports the missing native resolution without claiming a build
+  ---
+  duration_ms: 34.996773
+  type: 'test'
+  ...
+# Subtest: full readiness exits nonzero when a native resolution is missing
+ok 45 - full readiness exits nonzero when a native resolution is missing
+  ---
+  duration_ms: 35.228681
+  type: 'test'
+  ...
+# Subtest: unknown install flags cannot silently opt into a network operation
+ok 46 - unknown install flags cannot silently opt into a network operation
+  ---
+  duration_ms: 30.778699
+  type: 'test'
+  ...
+# Subtest: native configuration rejects microphone, background audio and unexpected plugins
+ok 47 - native configuration rejects microphone, background audio and unexpected plugins
+  ---
+  duration_ms: 31.554791
+  type: 'test'
+  ...
+# Subtest: registry-only install is also gated by app identity before any network call
+ok 48 - registry-only install is also gated by app identity before any network call
+  ---
+  duration_ms: 32.25963
+  type: 'test'
+  ...
+# Subtest: declared native versions match the checked official SDK-55 manifest
+ok 49 - declared native versions match the checked official SDK-55 manifest
+  ---
+  duration_ms: 1.222131
+  type: 'test'
+  ...
+# Subtest: sound effects do not request microphone or background audio capability
+ok 50 - sound effects do not request microphone or background audio capability
+  ---
+  duration_ms: 0.34397
+  type: 'test'
+  ...
+# Subtest: native sound sources and unchanged canonical icon paths are present
+ok 51 - native sound sources and unchanged canonical icon paths are present
+  ---
+  duration_ms: 1.559222
+  type: 'test'
+  ...
+# Subtest: missing lockfile blocks locked builds rather than pretending to be reproducible
+ok 52 - missing lockfile blocks locked builds rather than pretending to be reproducible
+  ---
+  duration_ms: 1.357382
+  type: 'test'
+  ...
+# Subtest: structurally consistent package lock passes metadata checks, not a network integrity claim
+ok 53 - structurally consistent package lock passes metadata checks, not a network integrity claim
+  ---
+  duration_ms: 8.548322
+  type: 'test'
+  ...
+# Subtest: lockfile for another app or version is rejected
+ok 54 - lockfile for another app or version is rejected
+  ---
+  duration_ms: 0.379954
+  type: 'test'
+  ...
+# Subtest: changed dependency ranges must be resolved explicitly, never silently installed with npm ci
+ok 55 - changed dependency ranges must be resolved explicitly, never silently installed with npm ci
+  ---
+  duration_ms: 0.424209
+  type: 'test'
+  ...
+# Subtest: lockfiles missing a declared installed dependency fail
+ok 56 - lockfiles missing a declared installed dependency fail
+  ---
+  duration_ms: 0.25661
+  type: 'test'
+  ...
+# Subtest: unexpected extra root dependencies cannot silently expand the reviewed package list
+ok 57 - unexpected extra root dependencies cannot silently expand the reviewed package list
+  ---
+  duration_ms: 0.199786
+  type: 'test'
+  ...
+# Subtest: local and git package references are rejected by the public-registry build policy
+ok 58 - local and git package references are rejected by the public-registry build policy
+  ---
+  duration_ms: 0.20912
+  type: 'test'
+  ...
+# Subtest: a transitive package without integrity metadata is not accepted
+ok 59 - a transitive package without integrity metadata is not accepted
+  ---
+  duration_ms: 0.18911
+  type: 'test'
+  ...
+# Subtest: bootstrap installation is explicit and subsequent installation uses npm ci
+ok 60 - bootstrap installation is explicit and subsequent installation uses npm ci
+  ---
+  duration_ms: 0.439351
+  type: 'test'
+  ...
+# Subtest: bootstrap is never implicitly chosen for a missing or inconsistent lockfile
+ok 61 - bootstrap is never implicitly chosen for a missing or inconsistent lockfile
+  ---
+  duration_ms: 0.705275
+  type: 'test'
+  ...
+# Subtest: project configuration must match each approved platform identity and version
+ok 62 - project configuration must match each approved platform identity and version
+  ---
+  duration_ms: 0.232224
+  type: 'test'
+  ...
+# Subtest: old-format and structurally malformed lockfiles are rejected with explicit reasons
+ok 63 - old-format and structurally malformed lockfiles are rejected with explicit reasons
+  ---
+  duration_ms: 0.142892
+  type: 'test'
+  ...
+# Subtest: null package entries are rejected without crashing the auditor
+ok 64 - null package entries are rejected without crashing the auditor
+  ---
+  duration_ms: 0.778614
+  type: 'test'
+  ...
+# Subtest: locked exact dependency versions must match direct pins
+ok 65 - locked exact dependency versions must match direct pins
+  ---
+  duration_ms: 0.194068
+  type: 'test'
+  ...
+# Subtest: truncated or fabricated-length SRI metadata fails the structural gate
+ok 66 - truncated or fabricated-length SRI metadata fails the structural gate
+  ---
+  duration_ms: 0.137835
+  type: 'test'
+  ...
+# Subtest: registry lookalikes, credential-bearing URLs and links are not approved tarballs
+ok 67 - registry lookalikes, credential-bearing URLs and links are not approved tarballs
+  ---
+  duration_ms: 0.273195
+  type: 'test'
+  ...
+# Subtest: unexpected app version and adaptive icon cannot bypass the canonical identity policy
+ok 68 - unexpected app version and adaptive icon cannot bypass the canonical identity policy
+  ---
+  duration_ms: 0.119627
+  type: 'test'
+  ...
+# Subtest: malformed lock package maps produce explicit failures
+ok 69 - malformed lock package maps produce explicit failures
+  ---
+  duration_ms: 0.095331
+  type: 'test'
+  ...
+# Subtest: controller initializes, starts, pauses and resumes a persisted attempt
+ok 70 - controller initializes, starts, pauses and resumes a persisted attempt
+  ---
+  duration_ms: 11.091702
+  type: 'test'
+  ...
+# Subtest: controller only consumes gift time during active gameplay
+ok 71 - controller only consumes gift time during active gameplay
+  ---
+  duration_ms: 2.625042
+  type: 'test'
+  ...
+# Subtest: reduced-motion move resolves immediately and repeated taps are locked out
+ok 72 - reduced-motion move resolves immediately and repeated taps are locked out
+  ---
+  duration_ms: 3.601378
+  type: 'test'
+  ...
+# Subtest: navigation away from gameplay pauses active time without discarding the attempt
+ok 73 - navigation away from gameplay pauses active time without discarding the attempt
+  ---
+  duration_ms: 1.615475
+  type: 'test'
+  ...
+# Subtest: activating time while an attempt exists protects that resumed attempt
+ok 74 - activating time while an attempt exists protects that resumed attempt
+  ---
+  duration_ms: 2.396843
+  type: 'test'
+  ...
+# Subtest: documentation links, store field lengths and release claims are validated
+ok 75 - documentation links, store field lengths and release claims are validated
+  ---
+  duration_ms: 71.456824
+  type: 'test'
+  ...
+# Subtest: every shipped sound is byte-identical to its deterministic generator
+ok 76 - every shipped sound is byte-identical to its deterministic generator
+  ---
+  duration_ms: 134.508709
+  type: 'test'
+  ...
+# Subtest: campaign has 480 distinct definitions in twelve worlds
+ok 77 - campaign has 480 distinct definitions in twelve worlds
+  ---
+  duration_ms: 29.079336
+  type: 'test'
+  ...
+# Subtest: all starting boards are stable, playable and reproducible
+ok 78 - all starting boards are stable, playable and reproducible
+  ---
+  duration_ms: 296.087014
+  type: 'test'
+  ...
+# Subtest: nonadjacent, out of bounds and unproductive swaps do not spend a move
+ok 79 - nonadjacent, out of bounds and unproductive swaps do not spend a move
+  ---
+  duration_ms: 0.892403
+  type: 'test'
+  ...
+# Subtest: productive swap spends exactly one move and stabilizes the board
+ok 80 - productive swap spends exactly one move and stabilizes the board
+  ---
+  duration_ms: 1.088513
+  type: 'test'
+  ...
+# Subtest: four in a row produces a rocket
+ok 81 - four in a row produces a rocket
+  ---
+  duration_ms: 0.891492
+  type: 'test'
+  ...
+# Subtest: five in a row produces a prism
+ok 82 - five in a row produces a prism
+  ---
+  duration_ms: 0.480682
+  type: 'test'
+  ...
+# Subtest: intersecting three-lines produce a bomb
+ok 83 - intersecting three-lines produce a bomb
+  ---
+  duration_ms: 0.611025
+  type: 'test'
+  ...
+# Subtest: prism swap clears selected color and spends one move
+ok 84 - prism swap clears selected color and spends one move
+  ---
+  duration_ms: 0.580871
+  type: 'test'
+  ...
+# Subtest: clears remove frost and chained specials are bounded
+ok 85 - clears remove frost and chained specials are bounded
+  ---
+  duration_ms: 1.010018
+  type: 'test'
+  ...
+# Subtest: wonder requires earned charge and does not cost a normal move
+ok 86 - wonder requires earned charge and does not cost a normal move
+  ---
+  duration_ms: 0.862048
+  type: 'test'
+  ...
+# Subtest: completed/failed games reject more moves
+ok 87 - completed/failed games reject more moves
+  ---
+  duration_ms: 0.3237
+  type: 'test'
+  ...
+# Subtest: repeated valid play maintains invariants and terminates
+ok 88 - repeated valid play maintains invariants and terminates
+  ---
+  duration_ms: 62.007376
+  type: 'test'
+  ...
+# Subtest: touch coordinates honor all board edges and reject off-board input
+ok 89 - touch coordinates honor all board edges and reject off-board input
+  ---
+  duration_ms: 0.610055
+  type: 'test'
+  ...
+# Subtest: a swipe picks the dominant direction and never wraps around a row
+ok 90 - a swipe picks the dominant direction and never wraps around a row
+  ---
+  duration_ms: 0.158365
+  type: 'test'
+  ...
+# Subtest: stale gestures cannot spend moves after navigation to a menu
+ok 91 - stale gestures cannot spend moves after navigation to a menu
+  ---
+  duration_ms: 12.766995
+  type: 'test'
+  ...
+# Subtest: background taps cannot select or swap game pieces
+ok 92 - background taps cannot select or swap game pieces
+  ---
+  duration_ms: 2.586524
+  type: 'test'
+  ...
+# Subtest: hydration is deduplicated and never replaces an already-started level
+ok 93 - hydration is deduplicated and never replaces an already-started level
+  ---
+  duration_ms: 1.228621
+  type: 'test'
+  ...
+# Subtest: hardware back from a result leaves a usable level-selection screen
+ok 94 - hardware back from a result leaves a usable level-selection screen
+  ---
+  duration_ms: 1.350622
+  type: 'test'
+  ...
+# Subtest: backgrounding a terminal animation keeps its result accessible
+ok 95 - backgrounding a terminal animation keeps its result accessible
+  ---
+  duration_ms: 1.499333
+  type: 'test'
+  ...
+# Subtest: closing abandonment returns to pause without losing a life
+ok 96 - closing abandonment returns to pause without losing a life
+  ---
+  duration_ms: 1.714421
+  type: 'test'
+  ...
+# Subtest: system reduced motion is transient and does not overwrite player settings
+ok 97 - system reduced motion is transient and does not overwrite player settings
+  ---
+  duration_ms: 1.516728
+  type: 'test'
+  ...
+# Subtest: native labels contain no damaged control characters
+ok 98 - native labels contain no damaged control characters
+  ---
+  duration_ms: 0.603434
+  type: 'test'
+  ...
+# Subtest: final Android manifest allows Internet and vibration without extra capabilities
+ok 99 - final Android manifest allows Internet and vibration without extra capabilities
+  ---
+  duration_ms: 737.821729
+  type: 'test'
+  ...
+# Subtest: Android microphone, camera, location, notifications and ad id are rejected
+ok 100 - Android microphone, camera, location, notifications and ad id are rejected
+  ---
+  duration_ms: 3246.474842
+  type: 'test'
+  ...
+# Subtest: Android SDK-scoped permissions are inspected too
+ok 101 - Android SDK-scoped permissions are inspected too
+  ---
+  duration_ms: 578.809527
+  type: 'test'
+  ...
+# Subtest: an unmerged tools removal marker is not evidence that a final APK is safe
+ok 102 - an unmerged tools removal marker is not evidence that a final APK is safe
+  ---
+  duration_ms: 580.977269
+  type: 'test'
+  ...
+# Subtest: wrong app identity, debuggability and cleartext permission block a release audit
+ok 103 - wrong app identity, debuggability and cleartext permission block a release audit
+  ---
+  duration_ms: 594.556318
+  type: 'test'
+  ...
+# Subtest: background audio service is rejected even without its foreground permission
+ok 104 - background audio service is rejected even without its foreground permission
+  ---
+  duration_ms: 714.98868
+  type: 'test'
+  ...
+# Subtest: AndroidX private dynamic receiver permission requires the signature protection level
+ok 105 - AndroidX private dynamic receiver permission requires the signature protection level
+  ---
+  duration_ms: 1157.765559
+  type: 'test'
+  ...
+# Subtest: missing or malformed native inputs cannot report successful verification
+ok 106 - missing or malformed native inputs cannot report successful verification
+  ---
+  duration_ms: 1695.040297
+  type: 'test'
+  ...
+# Subtest: minimal resolved iOS plist passes foreground-only capability audit
+ok 107 - minimal resolved iOS plist passes foreground-only capability audit
+  ---
+  duration_ms: 548.148495
+  type: 'test'
+  ...
+# Subtest: iOS microphone, tracking and background audio capabilities are rejected
+ok 108 - iOS microphone, tracking and background audio capabilities are rejected
+  ---
+  duration_ms: 575.358871
+  type: 'test'
+  ...
+# Subtest: unresolved iOS build variables require an explicit config-only mode
+ok 109 - unresolved iOS build variables require an explicit config-only mode
+  ---
+  duration_ms: 1125.768613
+  type: 'test'
+  ...
+# Subtest: explicit config-only mode still rejects the wrong concrete iOS identity
+ok 110 - explicit config-only mode still rejects the wrong concrete iOS identity
+  ---
+  duration_ms: 612.968839
+  type: 'test'
+  ...
+# Subtest: Android game dialogs stay inside the activity rather than stealing its window focus
+ok 111 - Android game dialogs stay inside the activity rather than stealing its window focus
+  ---
+  duration_ms: 0.66821
+  type: 'test'
+  ...
+# Subtest: hidden Android dialog mounts no overlay or native window
+ok 112 - hidden Android dialog mounts no overlay or native window
+  ---
+  duration_ms: 0.724584
+  type: 'test'
+  ...
+# Subtest: accessibility escape invokes the same close action as Android hardware back
+ok 113 - accessibility escape invokes the same close action as Android hardware back
+  ---
+  duration_ms: 0.174139
+  type: 'test'
+  ...
+# Subtest: iOS retains its native modal presentation and close callback
+ok 114 - iOS retains its native modal presentation and close callback
+  ---
+  duration_ms: 0.12161
+  type: 'test'
+  ...
+# Subtest: app uses the safe dialog and hides underlying content from screen readers
+ok 115 - app uses the safe dialog and hides underlying content from screen readers
+  ---
+  duration_ms: 0.370669
+  type: 'test'
+  ...
+# Subtest: replacement sounds serialize seeks on the same native player
+ok 116 - replacement sounds serialize seeks on the same native player
+  ---
+  duration_ms: 3.801726
+  type: 'test'
+  ...
+# Subtest: different sound players are not globally serialized
+ok 117 - different sound players are not globally serialized
+  ---
+  duration_ms: 1.695483
+  type: 'test'
+  ...
+# Subtest: stop during a seek suppresses its eventual playback
+ok 118 - stop during a seek suppresses its eventual playback
+  ---
+  duration_ms: 0.490898
+  type: 'test'
+  ...
+# Subtest: stop before audio configuration completes does not seek or play
+ok 119 - stop before audio configuration completes does not seek or play
+  ---
+  duration_ms: 0.422897
+  type: 'test'
+  ...
+# Subtest: failed seeks do not poison the next attempt on that player
+ok 120 - failed seeks do not poison the next attempt on that player
+  ---
+  duration_ms: 0.528193
+  type: 'test'
+  ...
+# Subtest: obsolete queued repeats are dropped before touching the player
+ok 121 - obsolete queued repeats are dropped before touching the player
+  ---
+  duration_ms: 1.140251
+  type: 'test'
+  ...
+# Subtest: adapter disposal blocks pending and future playback without releasing hook-owned players
+ok 122 - adapter disposal blocks pending and future playback without releasing hook-owned players
+  ---
+  duration_ms: 0.66098
+  type: 'test'
+  ...
+# Subtest: failed configuration and unknown cues never reach a player
+ok 123 - failed configuration and unknown cues never reach a player
+  ---
+  duration_ms: 0.231763
+  type: 'test'
+  ...
+# Subtest: direct adapter stop invalidates its pending work even with a still-current caller
+ok 124 - direct adapter stop invalidates its pending work even with a still-current caller
+  ---
+  duration_ms: 0.81619
+  type: 'test'
+  ...
+# Subtest: native audio hook wires the tested player adapter and disposes it
+ok 125 - native audio hook wires the tested player adapter and disposes it
+  ---
+  duration_ms: 0.711284
+  type: 'test'
+  ...
+# Subtest: Android notification blur pauses the real game without an AppState change
+ok 126 - Android notification blur pauses the real game without an AppState change
+  ---
+  duration_ms: 17.918471
+  type: 'test'
+  ...
+# Subtest: focus does not auto-resume a paused attempt or deduct the interruption
+ok 127 - focus does not auto-resume a paused attempt or deduct the interruption
+  ---
+  duration_ms: 10.934679
+  type: 'test'
+  ...
+# Subtest: background status and focus are independent gates in either event order
+ok 128 - background status and focus are independent gates in either event order
+  ---
+  duration_ms: 8.106636
+  type: 'test'
+  ...
+# Subtest: iOS inactive interrupts time and retains explicit resume after returning
+ok 129 - iOS inactive interrupts time and retains explicit resume after returning
+  ---
+  duration_ms: 13.84937
+  type: 'test'
+  ...
+# Subtest: unknown initial state remains paused until an active event
+ok 130 - unknown initial state remains paused until an active event
+  ---
+  duration_ms: 2.104449
+  type: 'test'
+  ...
+# Subtest: duplicate focus and active events never create additional timers
+ok 131 - duplicate focus and active events never create additional timers
+  ---
+  duration_ms: 6.459035
+  type: 'test'
+  ...
+# Subtest: cleanup is idempotent and stale timers and callbacks cannot reactivate the game
+ok 132 - cleanup is idempotent and stale timers and callbacks cannot reactivate the game
+  ---
+  duration_ms: 2.339117
+  type: 'test'
+  ...
+# Subtest: interruption retains a terminal result and never charges another life
+ok 133 - interruption retains a terminal result and never charges another life
+  ---
+  duration_ms: 5.18756
+  type: 'test'
+  ...
+# Subtest: Android blur stops ability sounds and cancels a scheduled victory fanfare
+ok 134 - Android blur stops ability sounds and cancels a scheduled victory fanfare
+  ---
+  duration_ms: 2.782264
+  type: 'test'
+  ...
+# Subtest: native entry uses the tested runtime rather than a separate unmanaged interval
+ok 135 - native entry uses the tested runtime rather than a separate unmanaged interval
+  ---
+  duration_ms: 4.99824
+  type: 'test'
+  ...
+# Subtest: German device language defaults to DE; everything else EN
+ok 136 - German device language defaults to DE; everything else EN
+  ---
+  duration_ms: 0.948756
+  type: 'test'
+  ...
+# Subtest: life regeneration respects exact 25-minute boundary and caps at five
+ok 137 - life regeneration respects exact 25-minute boundary and caps at five
+  ---
+  duration_ms: 0.188009
+  type: 'test'
+  ...
+# Subtest: additional failures do not restart an already running regeneration timer
+ok 138 - additional failures do not restart an already running regeneration timer
+  ---
+  duration_ms: 0.150573
+  type: 'test'
+  ...
+# Subtest: backwards system clock neither creates lives nor moves deadline backwards
+ok 139 - backwards system clock neither creates lives nor moves deadline backwards
+  ---
+  duration_ms: 0.105927
+  type: 'test'
+  ...
+# Subtest: zero lives cannot go negative
+ok 140 - zero lives cannot go negative
+  ---
+  duration_ms: 0.207498
+  type: 'test'
+  ...
+# Subtest: wins cost no life; replays cannot duplicate rewards or skip levels
+ok 141 - wins cost no life; replays cannot duplicate rewards or skip levels
+  ---
+  duration_ms: 0.246386
+  type: 'test'
+  ...
+# Subtest: all 480 levels unlock sequentially with no level 481
+ok 142 - all 480 levels unlock sequentially with no level 481
+  ---
+  duration_ms: 1.679499
+  type: 'test'
+  ...
+# Subtest: gift timer remains in inventory until deliberately activated
+ok 143 - gift timer remains in inventory until deliberately activated
+  ---
+  duration_ms: 0.205395
+  type: 'test'
+  ...
+# Subtest: one and four-hour packs grant active time, never a wall-clock expiry
+ok 144 - one and four-hour packs grant active time, never a wall-clock expiry
+  ---
+  duration_ms: 0.260015
+  type: 'test'
+  ...
+# Subtest: time is never charged in background, menus, pause or an ad
+ok 145 - time is never charged in background, menus, pause or an ad
+  ---
+  duration_ms: 0.413243
+  type: 'test'
+  ...
+# Subtest: protected attempt stays protected if timer expires during the level
+ok 146 - protected attempt stays protected if timer expires during the level
+  ---
+  duration_ms: 2.532064
+  type: 'test'
+  ...
+# Subtest: active attempt cannot be reset or skipped by starting another
+ok 147 - active attempt cannot be reset or skipped by starting another
+  ---
+  duration_ms: 1.805787
+  type: 'test'
+  ...
+# Subtest: no lives blocks start, active unlimited time permits it
+ok 148 - no lives blocks start, active unlimited time permits it
+  ---
+  duration_ms: 1.698418
+  type: 'test'
+  ...
+# Subtest: saved unfinished attempt restores exact board and move count
+ok 149 - saved unfinished attempt restores exact board and move count
+  ---
+  duration_ms: 4.183211
+  type: 'test'
+  ...
+# Subtest: corrupted, oversized and incompatible saves fail safely
+ok 150 - corrupted, oversized and incompatible saves fail safely
+  ---
+  duration_ms: 0.211343
+  type: 'test'
+  ...
+# Subtest: invalid persisted profile is rejected
+ok 151 - invalid persisted profile is rejected
+  ---
+  duration_ms: 0.117053
+  type: 'test'
+  ...
+# Subtest: save queue serializes writes and recovers last valid backup
+ok 152 - save queue serializes writes and recovers last valid backup
+  ---
+  duration_ms: 11.042008
+  type: 'test'
+  ...
+# Subtest: failed storage write is reported and does not poison future writes
+ok 153 - failed storage write is reported and does not poison future writes
+  ---
+  duration_ms: 0.49274
+  type: 'test'
+  ...
+# Subtest: 0.5.0 uses a one-time lock bootstrap workflow limited to the approved feature branch
+ok 154 - 0.5.0 uses a one-time lock bootstrap workflow limited to the approved feature branch
+  ---
+  duration_ms: 0.956248
+  type: 'test'
+  ...
+# Subtest: normal verification never bootstraps dependencies and consumes only a committed lockfile
+ok 155 - normal verification never bootstraps dependencies and consumes only a committed lockfile
+  ---
+  duration_ms: 0.220107
+  type: 'test'
+  ...
+# Subtest: feature-branch CI produces an internal Android APK without any store upload
+ok 156 - feature-branch CI produces an internal Android APK without any store upload
+  ---
+  duration_ms: 0.200167
+  type: 'test'
+  ...
+# Subtest: feature-branch CI performs a signing-free iOS simulator build on macOS 26
+ok 157 - feature-branch CI performs a signing-free iOS simulator build on macOS 26
+  ---
+  duration_ms: 0.16826
+  type: 'test'
+  ...
+# Subtest: 0.5.0 increments both native build numbers while preserving Apple and Android identities
+ok 158 - 0.5.0 increments both native build numbers while preserving Apple and Android identities
+  ---
+  duration_ms: 0.340014
+  type: 'test'
+  ...
+# Subtest: canonical PNG app icon is explicitly allowed through gitignore
+ok 159 - canonical PNG app icon is explicitly allowed through gitignore
+  ---
+  duration_ms: 0.241548
+  type: 'test'
+  ...
+# Subtest: a five-life pack adds all five lives to reserve even with four natural lives
+ok 160 - a five-life pack adds all five lives to reserve even with four natural lives
+  ---
+  duration_ms: 0.881677
+  type: 'test'
+  ...
+# Subtest: a five-life pack is usable with a full natural-life meter
+ok 161 - a five-life pack is usable with a full natural-life meter
+  ---
+  duration_ms: 0.165626
+  type: 'test'
+  ...
+# Subtest: natural lives are used first and reserve lives only pay for a failed attempt
+ok 162 - natural lives are used first and reserve lives only pay for a failed attempt
+  ---
+  duration_ms: 6.79935
+  type: 'test'
+  ...
+# Subtest: natural life regeneration is independent of the reserve
+ok 163 - natural life regeneration is independent of the reserve
+  ---
+  duration_ms: 0.164754
+  type: 'test'
+  ...
+# Subtest: an unlimited-time attempt never consumes reserve lives after the timer expires
+ok 164 - an unlimited-time attempt never consumes reserve lives after the timer expires
+  ---
+  duration_ms: 1.772237
+  type: 'test'
+  ...
+# Subtest: old saves migrate to an empty reserve without changing their natural lives
+ok 165 - old saves migrate to an empty reserve without changing their natural lives
+  ---
+  duration_ms: 0.564016
+  type: 'test'
+  ...
+# Subtest: reserve lives survive save/load and invalid balances are rejected
+ok 166 - reserve lives survive save/load and invalid balances are rejected
+  ---
+  duration_ms: 0.374956
+  type: 'test'
+  ...
+# Subtest: inventory is not consumed when an activation would exceed safe capacity
+ok 167 - inventory is not consumed when an activation would exceed safe capacity
+  ---
+  duration_ms: 0.445992
+  type: 'test'
+  ...
+# Subtest: rejected capacity activation is visible and keeps the inventory pack
+ok 168 - rejected capacity activation is visible and keeps the inventory pack
+  ---
+  duration_ms: 9.810683
+  type: 'test'
+  ...
+# Subtest: restoration advances only on exact eight-level milestones
+ok 169 - restoration advances only on exact eight-level milestones
+  ---
+  duration_ms: 1.130236
+  type: 'test'
+  ...
+# Subtest: completed worlds have five stages and no remaining milestone
+ok 170 - completed worlds have five stages and no remaining milestone
+  ---
+  duration_ms: 0.175741
+  type: 'test'
+  ...
+# Subtest: progress in one world does not wake another world
+ok 171 - progress in one world does not wake another world
+  ---
+  duration_ms: 0.234858
+  type: 'test'
+  ...
+# Subtest: replaying a milestone cannot trigger another celebration
+ok 172 - replaying a milestone cannot trigger another celebration
+  ---
+  duration_ms: 0.163703
+  type: 'test'
+  ...
+# Subtest: all twelve landmarks have distinct geometry, not just different colours
+ok 173 - all twelve landmarks have distinct geometry, not just different colours
+  ---
+  duration_ms: 1.541224
+  type: 'test'
+  ...
+# Subtest: each world adds five cumulative visible restoration layers
+ok 174 - each world adds five cumulative visible restoration layers
+  ---
+  duration_ms: 2.74599
+  type: 'test'
+  ...
+# Subtest: dome embeds the world-specific landmark and clamps invalid progress
+ok 175 - dome embeds the world-specific landmark and clamps invalid progress
+  ---
+  duration_ms: 2.736446
+  type: 'test'
+  ...
+# Subtest: read failures block hydration and cannot fall back to a stale backup
+ok 176 - read failures block hydration and cannot fall back to a stale backup
+  ---
+  duration_ms: 1.102184
+  type: 'test'
+  ...
+# Subtest: unknown save versions are not overwritten by an older backup
+ok 177 - unknown save versions are not overwritten by an older backup
+  ---
+  duration_ms: 0.333665
+  type: 'test'
+  ...
+# Subtest: unrecoverable corrupted data remains blocked rather than becoming a fresh game
+ok 178 - unrecoverable corrupted data remains blocked rather than becoming a fresh game
+  ---
+  duration_ms: 0.26957
+  type: 'test'
+  ...
+# Subtest: both absent slots permit the first start
+ok 179 - both absent slots permit the first start
+  ---
+  duration_ms: 0.167629
+  type: 'test'
+  ...
+# Subtest: a corrupt primary still recovers a valid backup
+ok 180 - a corrupt primary still recovers a valid backup
+  ---
+  duration_ms: 1.383992
+  type: 'test'
+  ...
+# Subtest: failed hydration makes no writes and retry restores the original profile
+ok 181 - failed hydration makes no writes and retry restores the original profile
+  ---
+  duration_ms: 6.460576
+  type: 'test'
+  ...
+# Subtest: hints return a legal pair without reading hidden refill RNG
+ok 182 - hints return a legal pair without reading hidden refill RNG
+  ---
+  duration_ms: 10.924204
+  type: 'test'
+  ...
+# Subtest: changing hidden RNG never changes the recommended visible move
+ok 183 - changing hidden RNG never changes the recommended visible move
+  ---
+  duration_ms: 1.549707
+  type: 'test'
+  ...
+# Subtest: finished and missing games have no recommended moves
+ok 184 - finished and missing games have no recommended moves
+  ---
+  duration_ms: 0.585138
+  type: 'test'
+  ...
+# Subtest: hints respond to visible unmet goals rather than choosing the first legal pair
+ok 185 - hints respond to visible unmet goals rather than choosing the first legal pair
+  ---
+  duration_ms: 3.429664
+  type: 'test'
+  ...
+# Subtest: charged wonder target uses visible frost and cannot read RNG
+ok 186 - charged wonder target uses visible frost and cannot read RNG
+  ---
+  duration_ms: 1.36268
+  type: 'test'
+  ...
+# Subtest: first level highlights a useful starting swap without spending a move
+ok 187 - first level highlights a useful starting swap without spending a move
+  ---
+  duration_ms: 2.935031
+  type: 'test'
+  ...
+# Subtest: manual hints do not mutate a board or consume lives, moves or inventory
+ok 188 - manual hints do not mutate a board or consume lives, moves or inventory
+  ---
+  duration_ms: 6.931435
+  type: 'test'
+  ...
+# Subtest: reopening a played attempt does not restart automatic opening guidance
+ok 189 - reopening a played attempt does not restart automatic opening guidance
+  ---
+  duration_ms: 6.67857
+  type: 'test'
+  ...
+# Subtest: selecting a tile removes stale two-highlight opening instructions
+ok 190 - selecting a tile removes stale two-highlight opening instructions
+  ---
+  duration_ms: 1.448107
+  type: 'test'
+  ...
+# Subtest: DE and EN contain identical translation keys
+ok 191 - DE and EN contain identical translation keys
+  ---
+  duration_ms: 2.77269
+  type: 'test'
+  ...
+# Subtest: each world has complete independent vector artwork
+ok 192 - each world has complete independent vector artwork
+  ---
+  duration_ms: 4.78278
+  type: 'test'
+  ...
+# Subtest: all gems and specials render finite SVGs
+ok 193 - all gems and specials render finite SVGs
+  ---
+  duration_ms: 0.601681
+  type: 'test'
+  ...
+# Subtest: board artwork includes 64 indexed cells and frost indicators
+ok 194 - board artwork includes 64 indexed cells and frost indicators
+  ---
+  duration_ms: 4.842278
+  type: 'test'
+  ...
+# Subtest: a fourth voice evicts the oldest; max three voices sound together
+ok 195 - a fourth voice evicts the oldest; max three voices sound together
+  ---
+  duration_ms: 1.340367
+  type: 'test'
+  ...
+# Subtest: repeated cues replace themselves rather than layering copies
+ok 196 - repeated cues replace themselves rather than layering copies
+  ---
+  duration_ms: 0.847846
+  type: 'test'
+  ...
+# Subtest: stop invalidates a native seek or browser unlock still in flight
+ok 197 - stop invalidates a native seek or browser unlock still in flight
+  ---
+  duration_ms: 0.251743
+  type: 'test'
+  ...
+# Subtest: voice capacity is reserved before asynchronous initialization finishes
+ok 198 - voice capacity is reserved before asynchronous initialization finishes
+  ---
+  duration_ms: 0.284452
+  type: 'test'
+  ...
+# Subtest: failed and naturally ended voices free capacity; old onEnded cannot stop replacement
+ok 199 - failed and naturally ended voices free capacity; old onEnded cannot stop replacement
+  ---
+  duration_ms: 0.339233
+  type: 'test'
+  ...
+# Subtest: disposal is idempotent and late calls never reach released devices
+ok 200 - disposal is idempotent and late calls never reach released devices
+  ---
+  duration_ms: 0.434434
+  type: 'test'
+  ...
+# Subtest: first dependency resolution is isolated to a one-time lock workflow on the approved feature branch
+ok 201 - first dependency resolution is isolated to a one-time lock workflow on the approved feature branch
+  ---
+  duration_ms: 0.994344
+  type: 'test'
+  ...
+# Subtest: Android and iOS JavaScript bundling are downstream of the single committed lock resolution
+ok 202 - Android and iOS JavaScript bundling are downstream of the single committed lock resolution
+  ---
+  duration_ms: 2.191568
+  type: 'test'
+  ...
+# Subtest: internal Android APK runs only for pushes to the approved feature branch and shares the committed lock
+ok 203 - internal Android APK runs only for pushes to the approved feature branch and shares the committed lock
+  ---
+  duration_ms: 0.14807
+  type: 'test'
+  ...
+# Subtest: capability audit reads the packaged Android manifest before internal artifact upload
+ok 204 - capability audit reads the packaged Android manifest before internal artifact upload
+  ---
+  duration_ms: 0.236831
+  type: 'test'
+  ...
+# Subtest: iOS simulator CI uses macOS 26, Xcode 26.2+ and explicitly disables signing
+ok 205 - iOS simulator CI uses macOS 26, Xcode 26.2+ and explicitly disables signing
+  ---
+  duration_ms: 0.14176
+  type: 'test'
+  ...
+# Subtest: verification is read-only and neither workflow contains store submission or secrets
+ok 206 - verification is read-only and neither workflow contains store submission or secrets
+  ---
+  duration_ms: 0.275118
+  type: 'test'
+  ...
+# Subtest: source configuration blocks legacy file access and overlays in the native release
+ok 207 - source configuration blocks legacy file access and overlays in the native release
+  ---
+  duration_ms: 0.363939
+  type: 'test'
+  ...
+1..207
+# tests 207
+# suites 0
+# pass 207
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13466.08853

@@ -1,0 +1,16 @@
+{
+  "checkedOn": "2026-09-15",
+  "source": "https://raw.githubusercontent.com/expo/expo/sdk-55/packages/expo/bundledNativeModules.json",
+  "expoSource": "https://registry.npmjs.org/expo/55.0.31",
+  "audioDocumentation": "https://docs.expo.dev/versions/v55.0.0/sdk/audio/",
+  "note": "SDK-55 versions checked on the authorized Mac using the installed Expo package and expo install --check. package-lock.json records the actual dependency resolution; this manifest is not native build evidence.",
+  "dependencies": {
+    "expo": "55.0.31",
+    "react": "19.2.0",
+    "react-native": "0.83.10",
+    "react-native-svg": "15.15.3",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "react-native-safe-area-context": "~5.6.2",
+    "expo-audio": "~55.0.16"
+  }
+}
