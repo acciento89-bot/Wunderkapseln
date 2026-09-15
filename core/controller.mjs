@@ -1,6 +1,6 @@
 import { feedbackPlan, compactFeedback } from './feedback.mjs';
 import { milestoneReached } from './restoration.mjs';
-import { freshProfile, regenerate, spendActiveTime, activatePack } from './profile.mjs';
+import { freshProfile, regenerate, spendActiveTime, activatePack, applyPaidAllocation as allocatePaidPurchase } from './profile.mjs';
 import { createSession, startLevel, applyMove, applyWonder, abandonLevel } from './session.mjs';
 import { createSaveQueue } from './storage.mjs';
 import { recommendMove } from './strategy.mjs';
@@ -11,7 +11,7 @@ function openingHint(session) {
 }
 export class GameController {
   constructor({storage,locale='en',now=()=>Date.now(),monotonic=()=>performance.now()}) {
-    this.now=now;this.monotonic=monotonic;this.store=createSaveQueue(storage);this.listeners=new Set();this.foreground=true;this.lastTick=monotonic();this.lastSave=this.lastTick;this.epoch=0;this.systemReducedMotion=false;this.initialization=null;this.feedbackId=0;
+    this.now=now;this.monotonic=monotonic;this.store=createSaveQueue(storage);this.listeners=new Set();this.foreground=true;this.lastTick=monotonic();this.lastSave=this.lastTick;this.epoch=0;this.systemReducedMotion=false;this.initialization=null;this.feedbackId=0;this.purchaseTail=Promise.resolve();
     this.state={session:createSession(freshProfile(now(),locale)),screen:'home',world:0,modal:null,selected:-1,hint:[],wonder:false,busy:false,visual:null,animation:{},notice:null,saveError:false,loadError:null,loaded:false,feedback:null,milestone:null};
   }
   getSnapshot=()=>this.state;
@@ -96,6 +96,20 @@ export class GameController {
   retry(){this.play(this.state.session.game?.levelId);}
   preference(key,value) {if(!this.state.loaded)return;if(!['language','reducedMotion','haptics','sound'].includes(key))return;if(key==='language'?!['de','en'].includes(value):typeof value!=='boolean')return;this.emit({session:{...this.state.session,profile:{...this.state.session.profile,[key]:value}}});this.save();}
   activate(key){if(!this.state.loaded)return;this.tick();try{const s=this.state.session,profile=activatePack(s.profile,key);this.emit({session:{...s,profile,protectedAttempt:s.protectedAttempt||(s.game?.status==='playing'&&profile.unlimitedSeconds>0)}});this.save();}catch(error){this.emit({notice:error.message?.includes('capacity')?'packCapacity':'notAvailable'});}}
+  applyPaidAllocation(allocation) {
+    const operation=this.purchaseTail.then(async()=>{
+      if(!this.state.loaded) throw new Error('not_loaded');
+      const current=this.state.session;
+      const result=allocatePaidPurchase(current.profile,allocation);
+      if(result.status!=='applied') return result;
+      const session={...current,profile:result.profile};
+      await this.store.save(session);
+      this.emit({session,saveError:false});
+      return result;
+    });
+    this.purchaseTail=operation.catch(()=>{});
+    return operation;
+  }
   hint(){if(!this.acceptsInput())return;const g=this.state.session.game;if(!g)return;this.emit({hint:recommendMove(g)||[],selected:-1,wonder:false,notice:'hintHelp'});}
   wonder(){if(!this.acceptsInput())return;const g=this.state.session.game;if(!g||g.charge<100||g.wonderUsed||this.state.busy)return;this.emit({wonder:!this.state.wonder,selected:-1,hint:[]});}
   async tap(index) {
