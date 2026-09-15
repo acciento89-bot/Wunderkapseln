@@ -26,6 +26,7 @@ function auditPlist(t, { id = 'com.kamilunavo.wondercaps', name = 'WonderCaps' }
 
 test('iOS source config uses the exact owner-supplied WonderCaps bundle identifier', () => {
   assert.equal(app.ios.bundleIdentifier, 'com.kamilunavo.wondercaps');
+  assert.equal(app.ios.buildNumber, '9');
 });
 test('iOS installed display name and bundle name use WonderCaps, not the repository title', () => {
   assert.equal(app.ios.infoPlist.CFBundleDisplayName, 'WonderCaps');
