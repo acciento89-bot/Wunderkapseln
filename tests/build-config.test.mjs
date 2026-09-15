@@ -21,7 +21,7 @@ test('native sound sources and unchanged canonical icon paths are present',()=>{
 test('store dependencies are exact and the native IAP plugin is configured without embedded secrets',()=>{
  const pkg=json('../package.json'),app=json('../app.json').expo;
  assert.deepEqual(Object.fromEntries(['react-native-iap','react-native-nitro-modules','@supabase/supabase-js','react-native-url-polyfill','expo-build-properties'].map(name=>[name,pkg.dependencies[name]])),{
-  'react-native-iap':'15.6.2','react-native-nitro-modules':'0.37.1','@supabase/supabase-js':'2.116.0','react-native-url-polyfill':'4.0.0','expo-build-properties':'55.0.18'
+  'react-native-iap':'15.6.2','react-native-nitro-modules':'0.36.5','@supabase/supabase-js':'2.116.0','react-native-url-polyfill':'4.0.0','expo-build-properties':'55.0.18'
  });
  assert.ok(app.plugins.some(plugin=>plugin==='react-native-iap'));
  assert.ok(app.plugins.some(plugin=>Array.isArray(plugin)&&plugin[0]==='expo-build-properties'));
