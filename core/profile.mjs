@@ -1,8 +1,9 @@
 export const LIFE_MS=25*60*1000;
 const PACKS={time10:600,time60:3600,time240:14400};
-const copy=p=>({...p,reserveLives:p.reserveLives??0,stars:{...p.stars},inventory:{...p.inventory}});
+const PURCHASE_IDS_MAX=2048;
+const copy=p=>({...p,reserveLives:p.reserveLives??0,stars:{...p.stars},inventory:{...p.inventory},appliedPurchaseIds:[...(p.appliedPurchaseIds??[])]});
 export function freshProfile(now=Date.now(),locale='en') {
-  return {lives:5,reserveLives:0,nextLifeAt:null,lastSeenAt:now,unlocked:1,stars:{},sparkles:0,unlimitedSeconds:0,inventory:{lives5:0,time10:1,time60:0,time240:0},language:String(locale).toLowerCase().startsWith('de')?'de':'en',reducedMotion:false,haptics:true,sound:true};
+  return {lives:5,reserveLives:0,nextLifeAt:null,lastSeenAt:now,unlocked:1,stars:{},sparkles:0,unlimitedSeconds:0,inventory:{lives5:0,time10:1,time60:0,time240:0},appliedPurchaseIds:[],language:String(locale).toLowerCase().startsWith('de')?'de':'en',reducedMotion:false,haptics:true,sound:true};
 }
 export function regenerate(profile,now=Date.now()) {
   const p=copy(profile), clock=Number.isFinite(now)?Math.max(now,p.lastSeenAt):p.lastSeenAt;p.lastSeenAt=clock;
@@ -41,6 +42,23 @@ export function activatePack(profile,key) {
   else throw new Error('unknown_pack');
   p.inventory[key]--;return p;
 }
+export function applyPaidAllocation(profile,allocation) {
+  if(!allocation||typeof allocation.id!=='string'||allocation.id.length<1||allocation.id.length>160||allocation.quantity!==1) throw new Error('invalid_allocation');
+  if(!['wk_lives_5','wk_time_60','wk_time_240'].includes(allocation.productId)) throw new Error('unknown_product');
+  const p=copy(profile);
+  if(p.appliedPurchaseIds.includes(allocation.id)) return {status:'duplicate',profile:p};
+  if(p.appliedPurchaseIds.length>=PURCHASE_IDS_MAX) return {status:'capacity',profile:p};
+  if(allocation.productId==='wk_lives_5') {
+    if(p.reserveLives+5>9999) return {status:'capacity',profile:p};
+    p.reserveLives+=5;
+  } else {
+    const key=allocation.productId==='wk_time_60'?'time60':'time240';
+    if(p.inventory[key]>=999) return {status:'capacity',profile:p};
+    p.inventory[key]++;
+  }
+  p.appliedPurchaseIds.push(allocation.id);
+  return {status:'applied',profile:p};
+}
 export function spendActiveTime(profile,seconds,active) {
   if(active!==true||!Number.isFinite(seconds)||seconds<=0||profile.unlimitedSeconds<=0) return profile;
   return {...profile,unlimitedSeconds:Math.max(0,profile.unlimitedSeconds-seconds)};
@@ -52,6 +70,7 @@ export function validateProfile(p) {
   if(Object.entries(p.stars).some(([key,value])=>!/^\d+$/.test(key)||!integer(Number(key),1,480)||!integer(value,1,3))) return false;
   for(let i=1;i<p.unlocked;i++) if(!p.stars[i]) return false;
   if(Object.keys(p.stars).some(id=>Number(id)>p.unlocked)) return false;
+  if(!Array.isArray(p.appliedPurchaseIds)||p.appliedPurchaseIds.length>PURCHASE_IDS_MAX||new Set(p.appliedPurchaseIds).size!==p.appliedPurchaseIds.length||p.appliedPurchaseIds.some(id=>typeof id!=='string'||id.length<1||id.length>160)) return false;
   if(Object.keys(p.inventory).length!==4) return false;
   return ['lives5','time10','time60','time240'].every(k=>integer(p.inventory[k],0,999));
 }
