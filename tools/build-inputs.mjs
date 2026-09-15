@@ -38,8 +38,10 @@ export function configurationErrors(pkg, expo) {
   }
   for (const plugin of plugins) {
     const name = Array.isArray(plugin) ? plugin[0] : plugin;
-    if (!['expo-audio', 'expo-asset'].includes(name)) errors.push(`unreviewed_plugin:${String(name)}`);
+    if (!['expo-audio', 'expo-asset', 'react-native-iap', 'expo-build-properties'].includes(name)) errors.push(`unreviewed_plugin:${String(name)}`);
   }
+  const buildProperties = plugins.find(plugin => Array.isArray(plugin) && plugin[0] === 'expo-build-properties')?.[1];
+  if (buildProperties?.ios?.deploymentTarget !== '15.1' || buildProperties?.android?.kotlinVersion !== '2.2.0') errors.push('invalid_iap_build_properties');
   const allowed = new Set(['android.permission.VIBRATE', 'android.permission.INTERNET', 'android.permission.ACCESS_NETWORK_STATE']);
   if (!Array.isArray(expo.android?.permissions)) errors.push('invalid_android_permissions');
   else for (const permission of expo.android.permissions) if (!allowed.has(permission)) errors.push(`unapproved_permission:${permission}`);
