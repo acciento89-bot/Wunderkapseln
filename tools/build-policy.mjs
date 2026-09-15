@@ -75,6 +75,7 @@ export function checkAppIdentity(pkg, expo) {
   if (expo.icon !== './assets/icon.png' || expo.splash?.image !== expo.icon) errors.push('icon_splash_mismatch');
   if (expo.android?.adaptiveIcon !== undefined) errors.push('unexpected_adaptive_icon');
   const versionCode = expo.android?.versionCode;
-  if (!Number.isSafeInteger(versionCode) || versionCode < 1 || String(versionCode) !== expo.ios?.buildNumber) errors.push('build_number_mismatch');
+  const iosBuild = expo.ios?.buildNumber;
+  if (!Number.isSafeInteger(versionCode) || versionCode < 1 || !/^\d+$/.test(iosBuild ?? '') || Number(iosBuild) < 1) errors.push('build_number_mismatch');
   return errors;
 }
