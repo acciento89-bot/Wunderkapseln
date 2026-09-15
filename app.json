@@ -20,7 +20,7 @@
         "CFBundleName": "WonderCaps"
       },
       "requireFullScreen": true,
-      "buildNumber": "8"
+      "buildNumber": "9"
     },
     "android": {
       "package": "com.kamilunavo.wunderkapseln",
@@ -50,7 +50,19 @@
           "enableBackgroundRecording": false
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "react-native-iap",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          },
+          "android": {
+            "kotlinVersion": "2.2.0"
+          }
+        }
+      ]
     ]
   }
 }
