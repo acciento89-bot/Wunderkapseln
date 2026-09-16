@@ -211,9 +211,9 @@ jobs:
           grep -q 'base/resources.pb' dist/build-evidence/android-aab-contents.txt
           jarsigner -verify -verbose -certs "$aab" > dist/build-evidence/android-signature.txt
           grep -q 'CN=Android Debug' dist/build-evidence/android-signature.txt
-          apkanalyzer manifest print "$apk" > dist/build-evidence/android-manifest.xml
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "$apk" > dist/build-evidence/android-manifest.xml
           python3 tools/audit-native.py --android dist/build-evidence/android-manifest.xml
-          apksigner verify --verbose --print-certs "$apk" > dist/build-evidence/android-apk-signature.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$apk" > dist/build-evidence/android-apk-signature.txt
           sha256sum "$aab" > dist/build-evidence/android-aab.sha256
       - name: Keep native failure diagnostics
         if: always()
