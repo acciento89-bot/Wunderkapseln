@@ -4,9 +4,9 @@
 
 **Goal:** Integrate three verified consumable products on iOS and Android, upload iOS Build 9 through the GitHub Bridge, publish Android to internal testing, and leave production unsubmitted.
 
-**Architecture:** `react-native-iap` supplies the StoreKit 2 and Google Play Billing client boundary. A dedicated Supabase project authenticates an invisible anonymous player, verifies store evidence in Edge Functions, and atomically journals and allocates each unique transaction before the client finishes it. GitHub branch `feature/store-purchases-build9` is authoritative; `acciento89-bot/onemorefloor` is the protected Apple bridge.
+**Architecture:** `react-native-iap` supplies the StoreKit 2 and Google Play Billing client boundary. Native purchased callbacks are checked against exact app/product identities, mapped to a non-secret allocation ID, and journaled atomically in the local versioned save before the client finishes the consumable. GitHub branch `feature/store-purchases-build9` is authoritative; `acciento89-bot/onemorefloor` is the protected Apple bridge.
 
-**Tech Stack:** Expo 55, React Native 0.83, React 19, react-native-iap, react-native-nitro-modules, Supabase Auth/Postgres/Edge Functions, Node test runner, GitHub Actions, Xcode/App Store Connect, Gradle/Google Play Billing.
+**Tech Stack:** Expo 55, React Native 0.83, React 19, react-native-iap, react-native-nitro-modules, Node test runner, GitHub Actions, Xcode/App Store Connect, Gradle/Google Play Billing.
 
 **Spec:** `docs/superpowers/specs/2026-09-15-store-purchases-design.md`
 
@@ -34,11 +34,11 @@
 - Modify: `tests/apple-identity.test.mjs`
 
 **Interfaces:**
-- Produces: pinned native purchase/Supabase dependencies, Expo plugin configuration, iOS build `9`, and audited Android version metadata.
+- Produces: pinned native purchase dependencies, Expo native configuration, iOS build `9`, and audited Android version metadata.
 
 - [ ] Add failing assertions that the exact approved dependencies and IAP plugin exist, iOS build is `9`, identities are unchanged, and no secret values are embedded.
 - [ ] Run `node --test tests/build-config.test.mjs tests/apple-identity.test.mjs` and confirm the new assertions fail for missing purchase dependencies/build number.
-- [ ] Pin compatible releases of `react-native-iap`, `react-native-nitro-modules`, `@supabase/supabase-js`, `react-native-url-polyfill`, and required Expo build configuration; resolve the lock only through the reviewed install path.
+- [ ] Pin compatible releases of `react-native-iap`, `react-native-nitro-modules`, and required Expo build configuration; resolve the lock only through the reviewed install path.
 - [ ] Set `expo.ios.buildNumber` to `9`. Preserve Android version code until the Play Console inspection in Task 7 selects reuse or the next free code.
 - [ ] Run the focused tests and `npm run check:build -- --source-only`; require zero failures.
 - [ ] Commit through the GitHub Bridge with `build: prepare verified store dependencies`.
@@ -78,36 +78,25 @@
 - [ ] Run focused tests plus `tests/reserve-lives.test.mjs`, `tests/profile.test.mjs`, and `tests/storage-safety.test.mjs`.
 - [ ] Commit through the GitHub Bridge with `feat: persist verified paid allocations exactly once`.
 
-### Task 4: Add Supabase purchase backend
+### Task 4: Validate native store callbacks locally
 
 **Files:**
-- Create: `supabase/config.toml`
-- Create: `supabase/migrations/<cli-generated>_purchase_journal.sql`
-- Create: `supabase/functions/verify-purchase/index.ts`
-- Create: `supabase/functions/_shared/catalog.ts`
-- Create: `supabase/functions/_shared/apple.ts`
-- Create: `supabase/functions/_shared/google.ts`
-- Create: `supabase/functions/verify-purchase/index.test.ts`
-- Create: `tests/supabase-contract.test.mjs`
+- Create: `payments/native-store.mjs`
+- Create: `tests/native-store.test.mjs`
 
 **Interfaces:**
-- Produces: authenticated `verify-purchase` function returning `{status, allocation}`; unique `(platform, transaction_key)` journal constraint; service-only atomic allocator; user-owned read model protected by RLS.
-- Consumes: Apple signed transaction/JWS or Google purchase token plus exact app/product identifiers.
+- Produces: `verifyStorePurchase(purchase)` returning `{status, allocation}` with a stable non-secret allocation ID.
+- Consumes: native StoreKit/Google Play Billing callback fields and exact app/product identifiers.
 
-- [ ] Create a dedicated `WonderCaps` Supabase project in `eu-central-1`, enable anonymous auth, and obtain only its public URL/publishable key for client configuration.
-- [ ] Use `supabase migration new purchase_journal`; write schema contract tests that fail before the migration/function exists.
-- [ ] Implement tables, indexes, RLS, revoked default privileges, fixed-search-path service function, and exact product mapping.
-- [ ] Write Edge Function tests for JWT ownership, Apple/Google app mismatch, unknown products, pending/refunded/revoked states, invalid evidence, first grant, and duplicate grant.
-- [ ] Implement store verification using only server-side secrets and redacted logs; never accept client reward/price/status as authority.
-- [ ] Run function tests, SQL contract tests, a duplicate-allocation database probe, and Supabase security/performance advisors; fix all relevant findings.
-- [ ] Deploy migration/function to the dedicated project and record project ref only, never secret values.
-- [ ] Commit through the GitHub Bridge with `feat: verify and journal store purchases`.
+- [ ] Write failing tests for app/package mismatch, unknown products, pending/revoked/malformed callbacks, stable allocation IDs, and raw-token non-persistence.
+- [ ] Implement the minimal callback validator and error normalizer.
+- [ ] Run focused tests and the complete Node suite.
+- [ ] Commit through the GitHub Bridge with `feat: validate native store purchases`.
 
 ### Task 5: Integrate native stores and treasure UI
 
 **Files:**
-- Create: `payments/supabase-client.js`
-- Create: `payments/native-store.js`
+- Create: `payments/native-store.mjs`
 - Create: `payments/usePurchases.js`
 - Modify: `App.js`
 - Modify: `ui/strings.mjs`
@@ -117,11 +106,11 @@
 
 **Interfaces:**
 - Produces: `usePurchases(controller)` with `{products, status, buy, retry}` and store-native checkout for exact product IDs.
-- Consumes: anonymous Supabase session, pure purchase machine, server verifier, controller allocation method, and `react-native-iap` callbacks.
+- Consumes: pure purchase machine, native callback validator, controller allocation method, and `react-native-iap` callbacks.
 
 - [ ] Write failing source/behavior tests for all three dynamic prices, disabled loading/unavailable states, localized cancel/pending/network/capacity notices, accessibility labels, exact account binding, and no direct grant from callbacks.
 - [ ] Run focused tests and confirm RED for missing hook/UI.
-- [ ] Implement anonymous session reuse, product fetch, platform purchase request, verification, durable allocation, and finish-after-delivery.
+- [ ] Implement product fetch, platform purchase request, native validation, durable allocation, restart replay, and finish-after-delivery.
 - [ ] Replace only the three unavailable shop rows; preserve existing treasure layout, art, sound, navigation, and activation controls.
 - [ ] Synchronize DE/EN keys and run focused tests, `npm test`, and `npm run check:docs`.
 - [ ] Commit through the GitHub Bridge with `feat: connect WonderCaps shop to native stores`.
@@ -188,7 +177,7 @@
 - Modify: `docs/BUILD9_RELEASE_STATE.md`
 
 **Interfaces:**
-- Produces: reproducible final evidence for code, Supabase, TestFlight, Play internal, and untouched production/review gates.
+- Produces: reproducible final evidence for code, TestFlight, Play internal, and untouched production/review gates.
 
 - [ ] Re-run the complete test/build matrix against the final GitHub SHA.
 - [ ] Recheck repository history and tracked files for credentials, keystores, certificates, tokens, and private keys.
