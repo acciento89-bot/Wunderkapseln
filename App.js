@@ -16,6 +16,8 @@ import { remainingLifeSeconds } from './core/profile.mjs';
 import { domeSvg, boardSvg, gemSvg, uiIcon } from './ui/art.mjs';
 import { tileAt, gestureTarget } from './ui/input.mjs';
 import { t, SHAPES, clock } from './ui/strings.mjs';
+import { PRODUCT_IDS } from './payments/catalog.mjs';
+import { usePurchases } from './payments/usePurchases.js';
 
 const GameModal=createGameModal({createElement:React.createElement,View,Modal,platform:Platform.OS});
 const ScreenFrame=createScreenFrame({createElement:React.createElement,View,ScrollView});
@@ -71,6 +73,7 @@ function Board({state,width,tr}){
 function Experience(){
  useGameAudio(controller);
  const state=useSyncExternalStore(controller.subscribe,controller.getSnapshot,controller.getSnapshot);
+ const purchases=usePurchases(controller,state.screen==='treasures');
  const insets=useSafeAreaInsets(),{width:screenWidth,height:screenHeight}=useWindowDimensions();
  const layout=screenMetrics(screenWidth,Math.max(1,screenHeight-insets.top-insets.bottom)),width=layout.contentWidth;
  const [boardBounds,setBoardBounds]=useState({width:0,height:0});
@@ -127,7 +130,8 @@ function Experience(){
    {[['lives5','packLives'],['time60','packHour'],['time240','packFour']].filter(([key])=>p.inventory[key]>0).map(([key,label])=><View style={styles.panel} key={key}><Text style={styles.eyebrow}>{tr('ownedPacks')}</Text><Text style={styles.title}>{tr(label)}</Text><Text style={styles.muted}>{tr('packCount',{n:p.inventory[key]})}</Text><Action label={tr('activate')} onPress={()=>controller.activate(key)}/></View>)}
    <View style={styles.panel}><Text style={styles.eyebrow}>{tr('activeTime')}</Text><Text style={styles.bigClock}>{clock(p.unlimitedSeconds)}</Text><Text style={styles.muted}>{tr('timeRule')}</Text></View>
    <Text style={styles.title}>{tr('futureShop')}</Text><Text style={styles.muted}>{tr('shopNotice')}</Text>
-   {['packLives','packHour','packFour'].map(key=><View style={styles.shopRow} key={key}><Text style={styles.label}>{tr(key)}</Text><Text style={styles.caption}>{tr('notAvailable')}</Text></View>)}
+   {PRODUCT_IDS.map((productId,index)=>{const product=purchases.products[productId],label=['packLives','packHour','packFour'][index],busy=['purchasing','verifying'].includes(purchases.status.phase);return <View style={styles.shopRow} key={productId}><Text style={styles.label}>{tr(label)}</Text><Action small label={product?.displayPrice||tr(purchases.status.phase==='loading'?'storeLoading':'storeUnavailable')} disabled={!product||busy} onPress={()=>purchases.buy(productId)}/></View>;})}
+   {purchases.status.phase!=='idle'&&purchases.status.phase!=='loading'&&<Text style={styles.muted} accessibilityLiveRegion="polite">{tr({pending:'purchasePending',retryable:purchases.status.error==='network'?'purchaseNetwork':'purchaseDelivery',capacity:'purchaseCapacity',delivered:'purchaseComplete',failed:'purchaseDelivery',cancelled:'purchaseCancelled'}[purchases.status.phase]||'purchaseDelivery')}</Text>}
   </>;
   if(state.screen==='settings')return <>
    {heading(tr('alpha'),tr('settings'))}<View style={styles.panel}><Text style={styles.title}>{tr('language')}</Text><View style={styles.row}>{['de','en'].map(code=><Action key={code} style={{flex:1}} small secondary={lang!==code} label={tr(code==='de'?'german':'english')} onPress={()=>controller.preference('language',code)}/>)}</View></View>
