@@ -24,7 +24,7 @@
     },
     "android": {
       "package": "com.kamilunavo.wunderkapseln",
-      "versionCode": 8,
+      "versionCode": 9,
       "permissions": [
         "android.permission.VIBRATE"
       ],
