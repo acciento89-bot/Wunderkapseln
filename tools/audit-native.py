@@ -19,8 +19,9 @@ ANDROID = "{http://schemas.android.com/apk/res/android}"
 TOOLS = "{http://schemas.android.com/tools}"
 # ExpoAudio uses AudioManager mode/speaker routing for foreground playback.
 # MODIFY_AUDIO_SETTINGS is a normal permission; it does not authorize recording.
-ALLOWED_PERMISSIONS = {"android.permission.INTERNET", "android.permission.VIBRATE", "android.permission.ACCESS_NETWORK_STATE", "android.permission.MODIFY_AUDIO_SETTINGS"}
+ALLOWED_PERMISSIONS = {"android.permission.INTERNET", "android.permission.VIBRATE", "android.permission.ACCESS_NETWORK_STATE", "android.permission.MODIFY_AUDIO_SETTINGS", "com.android.vending.BILLING"}
 PRIVATE_PERMISSION = ANDROID_APP_ID + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+SIGNATURE_PROTECTION_LEVELS = {"signature", "0x2"}
 USAGE_KEYS = {
     "NSMicrophoneUsageDescription", "NSCameraUsageDescription", "NSPhotoLibraryUsageDescription",
     "NSPhotoLibraryAddUsageDescription", "NSLocationWhenInUseUsageDescription",
@@ -50,12 +51,12 @@ def android_report(data):
                     for element in root.findall("permission")}
     for name in permissions:
         if name == PRIVATE_PERMISSION:
-            if declarations.get(name) != "signature":
+            if declarations.get(name) not in SIGNATURE_PROTECTION_LEVELS:
                 errors.append("unsafe_private_permission")
         elif name not in ALLOWED_PERMISSIONS:
             errors.append("unapproved_permission:" + name)
     for name, protection in declarations.items():
-        if name != PRIVATE_PERMISSION or protection != "signature":
+        if name != PRIVATE_PERMISSION or protection not in SIGNATURE_PROTECTION_LEVELS:
             errors.append("unsafe_private_permission")
     applications = root.findall("application")
     if len(applications) != 1:
