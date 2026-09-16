@@ -15,7 +15,7 @@ function job(source, name) {
 test('0.5.0 uses a one-time lock bootstrap workflow limited to the approved feature branch', () => {
   assert.ok(existsSync(new URL('../.github/workflows/bootstrap-lock.yml', import.meta.url)));
   const source = read('.github/workflows/bootstrap-lock.yml');
-  assert.match(source, /branches:\s*\[feature\/playable-miniature-worlds\]/);
+  assert.match(source, /branches:\s*\[feature\/store-purchases-build9\]/);
   assert.match(source, /permissions:\n  contents: write/);
   assert.match(source, /npm run native:install -- --bootstrap/);
   assert.match(source, /node tools\/ci-source\.mjs commit-lock/);
@@ -31,12 +31,13 @@ test('normal verification never bootstraps dependencies and consumes only a comm
   assert.match(resolution, /package-lock\.json/);
 });
 
-test('feature-branch CI produces an internal Android APK without any store upload', () => {
+test('Build 9 feature CI produces an audited Android AAB without any store upload', () => {
   const android = job(verify, 'android-preview');
   assert.match(android, /github\.event_name == 'push'/);
-  assert.match(android, /refs\/heads\/feature\/playable-miniature-worlds/);
-  assert.match(android, /assembleRelease/);
-  assert.match(android, /Wunderkapseln-INTERNAL-ONLY-APK/);
+  assert.match(android, /refs\/heads\/feature\/store-purchases-build9/);
+  assert.match(android, /bundleRelease/);
+  assert.match(android, /Wunderkapseln-INTERNAL-ONLY-AAB/);
+  assert.match(android, /jarsigner -verify/);
   assert.doesNotMatch(android, /play store|upload_to_play_store|eas submit/i);
 });
 
@@ -44,7 +45,7 @@ test('feature-branch CI performs a signing-free iOS simulator build on macOS 26'
   const ios = job(verify, 'ios-simulator');
   assert.match(ios, /runs-on: macos-26/);
   assert.match(ios, /github\.event_name == 'push'/);
-  assert.match(ios, /refs\/heads\/feature\/playable-miniature-worlds/);
+  assert.match(ios, /refs\/heads\/feature\/store-purchases-build9/);
   assert.match(ios, /xcodebuild/);
   assert.match(ios, /-sdk iphonesimulator/);
   assert.match(ios, /CODE_SIGNING_ALLOWED=NO/);
