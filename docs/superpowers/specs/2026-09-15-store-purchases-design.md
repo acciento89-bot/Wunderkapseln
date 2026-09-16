@@ -16,11 +16,9 @@ Ship the three existing consumable products through Apple In-App Purchase and Go
 
 ## Selected architecture
 
-The React Native client uses `react-native-iap` as the single native adapter over StoreKit 2 and Google Play Billing. The operating-system store remains the only checkout surface and payment processor. A dedicated Supabase project in `eu-central-1` provides anonymous authentication, server-side receipt/token verification, an immutable transaction journal, and atomic entitlement allocation.
+The React Native client uses `react-native-iap` as the single native adapter over StoreKit 2 and Google Play Billing. The operating-system store remains the only checkout surface, payment processor, and source of localized prices and purchase state. No Supabase project, paid backend, visible account, or external checkout is introduced.
 
-The app creates or resumes a Supabase anonymous session without showing a login screen. Its user UUID is passed to Apple as `appAccountToken` and to Google as a one-way, store-safe obfuscated account identifier. The publishable Supabase key may be present in client configuration; all Apple private keys, Google service-account credentials, and Supabase secret/service-role keys exist only as Edge Function secrets.
-
-Anonymous identity prevents callback duplication and supports retries on the same installation. It does not promise recovery after the anonymous session is irretrievably lost or cross-device restoration. Such recovery requires a later, explicitly designed identity-linking feature and is outside this release.
+The app validates the native callback against the exact product and application identity, derives a stable non-secret allocation ID, persists that ID with the local save, and only then finishes the consumable. Unfinished transactions are requested again from the store after restart. This prevents callback duplication on the same installation; cross-device restoration of already-consumed consumables and server-grade fraud detection remain outside this release.
 
 ## Responsibilities
 
@@ -29,27 +27,22 @@ Anonymous identity prevents callback duplication and supports retries on the sam
 - Connect to the native store when the treasure/shop screen is active.
 - Fetch all three products as one-time in-app products.
 - Display only store-returned localized title/price data. Never embed assumed prices.
-- Start a purchase with the authenticated player identifier.
+- Start a native one-time-product purchase without introducing an app account.
 - Normalize purchase callbacks into `purchased`, `pending`, `cancelled`, or `failed` without mutating gameplay state.
-- Send only purchased transactions to the verification service.
-- Finish/consume a transaction only after the server reports that its entitlement is durably allocated or was already allocated.
+- Reject mismatched app/package IDs, unknown products, malformed quantities, pending states, and revoked Apple transactions.
+- Finish/consume a transaction only after its entitlement is durably stored locally or was already stored.
 - Reprocess unfinished transactions after restart through the same idempotent path.
 
-### Verification Edge Function
+### Native callback validation
 
-- Require a valid Supabase user JWT and derive the user ID from verified claims.
-- Accept a strict platform-specific payload: Apple signed transaction/JWS or Google purchase token, product ID, app identity, and client environment hints.
-- Verify Apple data against Apple's server APIs and `com.kamilunavo.wondercaps`.
-- Verify Google data against the Google Play Developer API and `com.kamilunavo.wunderkapseln`.
-- Require the exact product ID, purchased/success state, matching application, matching account binding where supplied, and the expected Sandbox/Test/Production environment.
-- Reject pending, cancelled, refunded, revoked, mismatched, malformed, or unverifiable transactions.
-- Never log raw receipts, purchase tokens, signed transaction bodies, credentials, or complete authorization headers.
+- Accept only native StoreKit/Play Billing callbacks in purchased state for the three exact product IDs.
+- Require `com.kamilunavo.wondercaps` on Apple and `com.kamilunavo.wunderkapseln` on Google when the callback exposes identity fields.
+- Reject pending, revoked, mismatched, malformed, or unknown transactions.
+- Never log or persist raw receipts, purchase tokens, signed transaction bodies, credentials, or authorization headers.
 
 ### Transaction journal and allocation
 
-`purchase_transactions` stores one row per store transaction/token fingerprint with platform, environment, product, authenticated user, store state, verification timestamps, and allocation state. A database uniqueness constraint on the canonical platform transaction identifier is the primary duplicate barrier.
-
-An internal database function executes verification-result recording and entitlement allocation in one transaction. A first valid transaction increments exactly one inventory counter. A repeated request for the same transaction returns the existing result without incrementing again. Client roles have no direct insert/update/delete access to journal or entitlement tables; only the verified Edge Function service path can mutate them. Exposed user-readable rows use RLS with `(select auth.uid()) = user_id`.
+The versioned local save stores a bounded set of applied allocation IDs. Apple transaction IDs are namespaced directly; Google purchase tokens are converted to a stable local fingerprint so raw tokens are not persisted. A first valid callback increments exactly one inventory counter. Repeated callbacks return the existing result without incrementing again.
 
 ## Entitlement semantics
 
@@ -62,9 +55,7 @@ An internal database function executes verification-result recording and entitle
 
 ## Client delivery consistency
 
-The server returns an allocation record with a stable allocation ID and current paid-inventory totals. The client persists applied allocation IDs alongside the existing versioned save before acknowledging local delivery. Repeated syncs compare IDs and cannot apply the same increment twice. If local persistence fails, the transaction remains unfinished and the same allocation is retried. Store completion happens only after durable local application.
-
-The server journal remains the authority for whether a store transaction has been allocated. Gameplay remains local and offline after delivery; Supabase is required only to buy, verify, redeliver an unfinished purchase, or synchronize paid inventory.
+The native adapter produces an allocation record with a stable allocation ID. The client persists applied allocation IDs alongside the existing versioned save before acknowledging local delivery. Repeated callbacks compare IDs and cannot apply the same increment twice. If local persistence fails, the transaction remains unfinished and the same allocation is retried. Store completion happens only after durable local application.
 
 ## User interface and errors
 
@@ -81,13 +72,10 @@ German and English dictionaries remain key-identical. Accessibility labels annou
 
 ## Security and privacy
 
-- Dedicated Supabase project, anonymous sign-ins enabled, RLS on every exposed table.
-- Public clients receive only the project URL and publishable key.
-- Edge Functions validate JWTs and never trust a client-supplied user ID, price, currency, product reward, or transaction status.
-- Product-to-reward mapping is a server constant shared by tests, not request data.
-- Apple/Google credentials live only in managed server secrets.
-- Database functions with elevated privileges live outside exposed schemas, have a fixed `search_path`, revoke default `PUBLIC` execution, and explicitly authorize only the service path.
-- Logs use redacted request IDs and status categories.
+- Product-to-reward mapping is a reviewed application constant shared by tests, never supplied by purchase callbacks.
+- Raw purchase tokens and signed transaction bodies are not logged or persisted.
+- Signing credentials and upload keys remain only in protected GitHub/store configuration and never enter the app repository.
+- The accepted trade-off is installation-local replay protection rather than a paid verification backend.
 
 ## Testing and verification
 
@@ -99,15 +87,12 @@ Store acceptance requires real Apple Sandbox/TestFlight and Google license-teste
 
 ## Deployment order
 
-1. Create the dedicated Supabase project and apply reviewed schema/RLS/function migrations.
-2. Configure server-only Apple and Google verification credentials.
-3. Implement and deploy verification functions against sandbox/test environments.
-4. Integrate the tested client adapter and purchase UI.
-5. Push the reviewed feature commit to GitHub and require all automated/native CI gates for that exact SHA.
-6. Through the existing GitHub Bridge workflow, fetch the exact GitHub SHA, test Apple Sandbox/TestFlight, and create/upload iOS Build 9 without review submission. The workflow must propagate a failed archive, export, or uploader exit code instead of reporting a false-green run.
-7. Inspect Google Play package, version codes, products, and tracks before selecting an artifact.
-8. Upload or reuse the validated signed AAB, publish it to internal testing, and confirm tester availability.
-9. Prepare the identical artifact in production only as an unsubmitted draft, with no rollout or production review action.
+1. Integrate the tested native adapter, local replay journal, and purchase UI.
+2. Push the reviewed feature commit to GitHub and require all automated/native CI gates for that exact SHA.
+3. Through the existing GitHub Bridge workflow, fetch the exact GitHub SHA, test Apple Sandbox/TestFlight, and create/upload iOS Build 9 without review submission. The workflow must propagate a failed archive, export, or uploader exit code instead of reporting a false-green run.
+4. Create/inspect the Google Play package, version codes, products, and tracks before selecting an artifact.
+5. Upload or reuse the validated signed AAB, publish it to internal testing, and confirm tester availability.
+6. Prepare the identical artifact in production only as an unsubmitted draft, with no rollout or production review action.
 
 ## Out of scope
 
