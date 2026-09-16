@@ -147,7 +147,7 @@ jobs:
           retention-days: 14
 
   android-preview:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/playable-miniature-worlds'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/store-purchases-build9'
     needs: [rules-and-preview, native-resolution, native-bundles]
     runs-on: ubuntu-24.04
     timeout-minutes: 40
@@ -192,24 +192,29 @@ jobs:
           set -o pipefail
           "$manager" 'platforms;android-36' 'build-tools;36.0.0'
       - run: npx --no-install expo prebuild --platform android --no-install
-      - name: Assemble internal release-mode APK with generated development key
+      - name: Bundle internal release-mode AAB and audit APK with generated development key
         working-directory: android
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p ../dist/build-evidence
-          ./gradlew assembleRelease --no-daemon --console=plain 2>&1 | tee ../dist/build-evidence/gradle.log
-      - name: Audit packaged manifest and verify development signature
+          ./gradlew bundleRelease assembleRelease --no-daemon --console=plain 2>&1 | tee ../dist/build-evidence/gradle.log
+      - name: Verify AAB and audit resolved Android capabilities
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p dist/build-evidence
+          aab="$(node tools/find-one-artifact.mjs android/app/build/outputs/bundle/release .aab file)"
           apk="$(node tools/find-one-artifact.mjs android/app/build/outputs/apk/release .apk file)"
-          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "$apk" > dist/build-evidence/android-packaged-manifest.xml
-          python3 tools/audit-native.py --android dist/build-evidence/android-packaged-manifest.xml > dist/build-evidence/android-capabilities.json
-          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$apk" > dist/build-evidence/android-signature.txt
+          unzip -l "$aab" > dist/build-evidence/android-aab-contents.txt
+          grep -q 'base/manifest/AndroidManifest.xml' dist/build-evidence/android-aab-contents.txt
+          grep -q 'base/resources.pb' dist/build-evidence/android-aab-contents.txt
+          jarsigner -verify -verbose -certs "$aab" > dist/build-evidence/android-signature.txt
           grep -q 'CN=Android Debug' dist/build-evidence/android-signature.txt
-          sha256sum "$apk" > dist/build-evidence/android-apk.sha256
+          apkanalyzer manifest print "$apk" > dist/build-evidence/android-manifest.xml
+          python3 tools/audit-native.py --android dist/build-evidence/android-manifest.xml
+          apksigner verify --verbose --print-certs "$apk" > dist/build-evidence/android-apk-signature.txt
+          sha256sum "$aab" > dist/build-evidence/android-aab.sha256
       - name: Keep native failure diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -220,15 +225,15 @@ jobs:
           retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
-          name: Wunderkapseln-INTERNAL-ONLY-APK
+          name: Wunderkapseln-INTERNAL-ONLY-AAB
           path: |
-            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
             dist/build-evidence/
           if-no-files-found: error
           retention-days: 14
 
   ios-simulator:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/playable-miniature-worlds'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/store-purchases-build9'
     needs: [rules-and-preview, native-resolution, native-bundles]
     runs-on: macos-26
     timeout-minutes: 45
