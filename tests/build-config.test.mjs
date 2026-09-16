@@ -18,12 +18,14 @@ test('native sound sources and unchanged canonical icon paths are present',()=>{
  const files=[...source.matchAll(/require\('([^']+)'\)/g)].map(m=>new URL(m[1],new URL('../native/useGameAudio.js',import.meta.url)));
  assert.equal(files.length,14);for(const file of files)assert.ok(existsSync(file));
 });
-test('store dependencies are exact and the native IAP plugin is configured without embedded secrets',()=>{
+test('store dependencies are exact, native-only, and configured without embedded secrets',()=>{
  const pkg=json('../package.json'),app=json('../app.json').expo;
- assert.deepEqual(Object.fromEntries(['react-native-iap','react-native-nitro-modules','@supabase/supabase-js','react-native-url-polyfill','expo-build-properties'].map(name=>[name,pkg.dependencies[name]])),{
-  'react-native-iap':'15.6.2','react-native-nitro-modules':'0.36.5','@supabase/supabase-js':'2.116.0','react-native-url-polyfill':'4.0.0','expo-build-properties':'55.0.18'
+ assert.deepEqual(Object.fromEntries(['react-native-iap','react-native-nitro-modules','expo-build-properties'].map(name=>[name,pkg.dependencies[name]])),{
+  'react-native-iap':'15.6.2','react-native-nitro-modules':'0.36.5','expo-build-properties':'55.0.18'
  });
- assert.ok(app.plugins.some(plugin=>plugin==='react-native-iap'));
+ assert.equal(pkg.dependencies['@supabase/supabase-js'],undefined);
+ assert.equal(pkg.dependencies['react-native-url-polyfill'],undefined);
+ assert.ok(!app.plugins.some(plugin=>(Array.isArray(plugin)?plugin[0]:plugin)==='react-native-iap'),'react-native-iap uses native autolinking and has no Expo config plugin');
  assert.ok(app.plugins.some(plugin=>Array.isArray(plugin)&&plugin[0]==='expo-build-properties'));
  assert.doesNotMatch(JSON.stringify({pkg,app}),/service[_-]?role|private[_-]?key|BEGIN PRIVATE KEY|ASC_PRIVATE_KEY|PLAY_SERVICE_ACCOUNT/i);
 });
