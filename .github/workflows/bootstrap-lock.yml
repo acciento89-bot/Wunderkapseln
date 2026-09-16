@@ -2,7 +2,7 @@ name: Bootstrap WonderCaps native lock
 
 on:
   push:
-    branches: [feature/playable-miniature-worlds]
+    branches: [feature/store-purchases-build9]
 
 permissions:
   contents: write
