@@ -53,6 +53,16 @@ test('AndroidX private dynamic receiver permission requires the signature protec
   const bad = run(t, 'android', manifest(valid.replace('protectionLevel="signature"', 'protectionLevel="normal"')));
   assert.equal(bad.status, 1); assert.ok(bad.report.errors.includes('unsafe_private_permission'));
 });
+test('compiled Billing manifest permits Play Billing and numeric signature protection', t => {
+  const name = `${appId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`;
+  const xml = manifest(
+    permission('com.android.vending.BILLING') + permission(name) +
+    `<permission android:name="${name}" android:protectionLevel="0x2"/>`
+  );
+  const result = run(t, 'android', xml);
+  assert.equal(result.status, 0);
+  assert.deepEqual(result.report.errors, []);
+});
 test('missing or malformed native inputs cannot report successful verification', t => {
   assert.equal(run(t, 'android', null).status, 1);
   assert.equal(run(t, 'android', '<manifest>').status, 1);
