@@ -51,7 +51,6 @@
         }
       ],
       "expo-asset",
-      "react-native-iap",
       [
         "expo-build-properties",
         {
