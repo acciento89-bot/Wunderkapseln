@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@supabase/supabase-js": "2.116.0",
     "expo": "55.0.31",
     "expo-asset": "~55.0.20",
     "expo-audio": "~55.0.16",
@@ -42,8 +41,7 @@
     "react-native-iap": "15.6.2",
     "react-native-nitro-modules": "0.36.5",
     "react-native-safe-area-context": "~5.6.2",
-    "react-native-svg": "15.15.3",
-    "react-native-url-polyfill": "4.0.0"
+    "react-native-svg": "15.15.3"
   },
   "devDependencies": {
     "sharp": "0.34.5",
