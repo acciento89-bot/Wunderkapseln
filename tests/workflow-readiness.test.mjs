@@ -13,7 +13,7 @@ function job(source, name) {
 }
 
 test('first dependency resolution is isolated to a one-time lock workflow on the approved feature branch', () => {
-  assert.match(bootstrap, /branches:\s*\[feature\/playable-miniature-worlds\]/);
+  assert.match(bootstrap, /branches:\s*\[feature\/store-purchases-build9\]/);
   assert.match(bootstrap, /npm run native:install -- --bootstrap/);
   assert.match(bootstrap, /node tools\/ci-source\.mjs commit-lock/);
   assert.match(bootstrap, /git diff --exit-code -- package\.json app\.json/);
@@ -33,14 +33,14 @@ test('Android and iOS JavaScript bundling are downstream of the single committed
   assert.match(bundles, /expo export --platform ios/);
 });
 
-test('internal Android APK runs only for pushes to the approved feature branch and shares the committed lock', () => {
+test('internal Android AAB runs only for pushes to the approved feature branch and shares the committed lock', () => {
   const apk = job(verify, 'android-preview');
   assert.match(apk, /github\.event_name == 'push'/);
-  assert.match(apk, /refs\/heads\/feature\/playable-miniature-worlds/);
+  assert.match(apk, /refs\/heads\/feature\/store-purchases-build9/);
   assert.match(apk, /needs: \[rules-and-preview, native-resolution, native-bundles\]/);
   assert.match(apk, /wondercaps-lock-\$\{\{ inputs\.source_sha \|\| github\.sha \}\}/);
   assert.match(apk, /npm run native:install/);
-  assert.match(apk, /assembleRelease/);
+  assert.match(apk, /bundleRelease/);
 });
 
 test('capability audit reads the packaged Android manifest before internal artifact upload', () => {
@@ -48,7 +48,7 @@ test('capability audit reads the packaged Android manifest before internal artif
   assert.match(apk, /apkanalyzer.*manifest print/);
   assert.match(apk, /audit-native\.py --android/);
   assert.match(apk, /apksigner.*verify --verbose --print-certs/);
-  assert.ok(apk.indexOf('audit-native.py --android') < apk.indexOf('name: Wunderkapseln-INTERNAL-ONLY-APK'));
+  assert.ok(apk.indexOf('audit-native.py --android') < apk.indexOf('name: Wunderkapseln-INTERNAL-ONLY-AAB'));
   assert.doesNotMatch(apk, /continue-on-error: true/);
 });
 
