@@ -1,3 +1,6 @@
+import {RescueController} from './core/rescue-controller.mjs';
+import {createRescueBoundary} from './core/rescue-boundary.mjs';
+import {RescueChapter} from './ui/RescueChapter.js';
 import { createScreenFrame } from './native/screen-frame.mjs';
 import { screenMetrics, fitBoardSize } from './ui/layout.mjs';
 import { createGameModal } from './native/modal.mjs';
@@ -24,6 +27,8 @@ const ScreenFrame=createScreenFrame({createElement:React.createElement,View,Scro
 const palette={bg:'#10343e',panel:'#1a414a',cream:'#f7f0d9',muted:'#a1bebb',gold:'#f5cf87',ink:'#385b58',line:'#31545b'};
 const deviceLocale=()=>{try{return Intl.DateTimeFormat().resolvedOptions().locale;}catch{return 'en';}};
 const controller=new GameController({storage:AsyncStorage,locale:deviceLocale()});
+const rescueController=new RescueController({storage:AsyncStorage});
+const rescueBoundary=createRescueBoundary(controller,rescueController);
 const Art=memo(({xml,size=24,height=size})=><SvgXml xml={xml} width={size} height={height}/>);
 const Icon=({name,color=palette.cream,size=24})=><Art xml={uiIcon(name,color,size)} size={size}/>;
 function Action({label,onPress,icon,secondary=false,disabled=false,small=false,style}){
@@ -71,6 +76,9 @@ function Board({state,width,tr}){
  </View>;
 }
 function Experience(){
+ const [inRescue,setInRescue]=useState(false),rescueVisible=useRef(false);
+ const enterRescue=()=>{rescueVisible.current=true;rescueBoundary.enter();setInRescue(true);};
+ const exitRescue=()=>{rescueVisible.current=false;rescueBoundary.leave();setInRescue(false);};
  useGameAudio(controller);
  const state=useSyncExternalStore(controller.subscribe,controller.getSnapshot,controller.getSnapshot);
  const purchases=usePurchases(controller,state.screen==='treasures');
@@ -84,11 +92,11 @@ function Experience(){
  const reduce=p.reducedMotion||systemReduce;
  useEffect(()=>{
   let mounted=true;
-  const stopRuntime=attachNativeRuntime({controller,appState:AppState,platform:Platform.OS});
-  controller.initialize();
+  const stopRuntime=attachNativeRuntime({controller:rescueBoundary,appState:AppState,platform:Platform.OS});
+  controller.initialize();rescueController.initialize();
   AccessibilityInfo.isReduceMotionEnabled().then(value=>{if(mounted)setSystemReduce(value);}).catch(()=>{});
   const motion=AccessibilityInfo.addEventListener('reduceMotionChanged',setSystemReduce);
-  const back=BackHandler.addEventListener('hardwareBackPress',()=>controller.back());
+  const back=BackHandler.addEventListener('hardwareBackPress',()=>{if(rescueVisible.current){rescueController.pause();return true;}return controller.back();});
   return()=>{mounted=false;stopRuntime();motion.remove();back.remove();};
  },[]);
  // Respect the platform animation preference, including when it changes while playing.
@@ -107,6 +115,7 @@ function Experience(){
    <View style={styles.row}><Text style={styles.caption}>{done===40?tr('worldComplete'):tr('nextDetail',{n:restoration.remaining})}</Text><Text style={styles.caption}>{done}/40</Text></View>
    <Restoration profile={p} world={world} tr={tr}/>
    <Action style={styles.mainPlay} icon="play" label={`${tr(g?.status==='playing'?'resume':'play')}  \u2605  ${tr('level')} ${g?.status==='playing'?g.levelId:p.unlocked}`} onPress={()=>controller.play()}/>
+   <Action secondary label={tr('rescueTitle')} onPress={enterRescue}/>
    <Text style={styles.fine}>{tr('offline')}  /  {tr('alpha')}</Text>
   </>;
   if(state.screen==='atlas')return <>{heading(tr('atlasIntro'),tr('allWorlds'))}<View style={styles.cards}>{WORLDS.map((item,i)=>{const count=completedIn(p,i),size=(width-12*(layout.columns-1))/layout.columns;return <Pressable key={i} accessibilityRole="button" accessibilityLabel={`${item[lang]}, ${count}/40`} onPress={()=>controller.world(i)} style={[styles.worldCard,{width:size}]}><Dome world={i} progress={count/40} size={size-8} reduce={reduce}/><Text style={styles.cardTitle}>{item[lang]}</Text><Text style={styles.caption}>{p.unlocked<i*40+1?tr('unlocks',{n:i*40+1}):`${count}/40`}</Text></Pressable>;})}</View></>;
@@ -147,6 +156,7 @@ function Experience(){
   if(state.modal==='noLives')return <><Icon name="heart" color="#efb5ac" size={48}/><Text style={styles.modalTitle}>{tr('noLives')}</Text><Text style={styles.bigClock}>{clock(remainingLifeSeconds(p,Date.now()))}</Text><Text style={styles.muted}>{tr('noLivesBody')}</Text><Action label={tr('treasures')} onPress={()=>controller.navigate('treasures')}/><Action secondary label={tr('close')} onPress={()=>controller.closeModal()}/></>;
   return null;
  }
+ if(inRescue)return <RescueChapter controller={rescueController} language={lang} onExit={exitRescue}/>;
  return <View style={[styles.background,{paddingTop:insets.top,paddingBottom:insets.bottom}]}><StatusBar barStyle="light-content"/>
   <View style={styles.shell} importantForAccessibility={state.modal?'no-hide-descendants':'auto'} accessibilityElementsHidden={Boolean(state.modal)}>{!active&&<View style={[styles.header,layout.tablet&&styles.tabletHeader]}><Icon name="capsule" color={palette.gold} size={26}/><Text style={styles.brand} numberOfLines={1}>WUNDERKAPSELN</Text><Pressable accessibilityRole="button" accessibilityLabel={`${p.lives} ${tr('lives')}, ${tr('reserveCount',{n:p.reserveLives})}`} onPress={()=>controller.navigate('treasures')} style={styles.hearts}><Icon name="heart" color="#efb5ac" size={20}/><Text style={styles.heartCount}>{p.lives}/5{p.reserveLives>0?` +${p.reserveLives}`:''}</Text>{p.unlimitedSeconds>0&&<Text style={styles.timer}>{clock(p.unlimitedSeconds)}</Text>}</Pressable><Circle label={tr('settings')} icon="settings" onPress={()=>controller.navigate('settings')}/></View>}
    {(state.saveError||['recovered','corrupt','packCapacity','notAvailable'].includes(state.notice))&&<Text accessibilityRole="alert" style={styles.alert}>{tr(state.saveError?'saveError':state.notice)}</Text>}

@@ -116,6 +116,7 @@ test('Android blur stops ability sounds and cancels a scheduled victory fanfare'
 
 test('native entry uses the tested runtime rather than a separate unmanaged interval', () => {
   const source=readFileSync(new URL('../App.js',import.meta.url),'utf8');
-  assert.match(source,/attachNativeRuntime\(\{\s*controller,\s*appState:\s*AppState,\s*platform:\s*Platform\.OS\s*\}\)/);
+  assert.match(source,/attachNativeRuntime\(\{\s*controller:\s*rescueBoundary,\s*appState:\s*AppState,\s*platform:\s*Platform\.OS\s*\}\)/);
+  assert.match(source,/createRescueBoundary\(controller,rescueController\)/);
   assert.doesNotMatch(source,/setInterval\(\(\)=>controller\.tick/);
 });

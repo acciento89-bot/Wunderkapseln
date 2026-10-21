@@ -1,7 +1,7 @@
 import { levelFor, WORLDS } from './levels.mjs';
 const SPECIALS=['','row','column','bomb','prism'];
 const copyBoard=b=>b.map(c=>c?{...c}:null);
-function clone(g) { return {...g,board:copyBoard(g.board),frost:[...g.frost],collected:[...g.collected],targets:g.targets.map(t=>({...t}))}; }
+function clone(g) { return {...g,...(g.mode==='rescue'?{exits:[...g.exits],rescued:[...g.rescued],companionIds:[...g.companionIds]}:{}),board:copyBoard(g.board),frost:[...g.frost],collected:[...g.collected],targets:g.targets.map(t=>({...t}))}; }
 function random(g,n) {
   g.rng=(g.rng+0x6D2B79F5)>>>0; let t=g.rng;
   t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61);
@@ -27,7 +27,7 @@ export function legalMoves(g) {
   if(g.status!=='playing') return [];
   const b=copyBoard(g.board), moves=[];
   for(let i=0;i<b.length;i++) for(const j of [i+1,i+g.size]) {
-    if(!adjacent(i,j,g.size)) continue;
+    if(!adjacent(i,j,g.size)||b[i].companion||b[j].companion) continue;
     if(b[i].special||b[j].special) {moves.push([i,j]);continue;}
     exchange(b,i,j); const match=findMatches(b,g.size).length>0; exchange(b,i,j);
     if(match) moves.push([i,j]);
@@ -46,6 +46,11 @@ function freshBoard(g) {
 }
 function playable(g) {
   if(legalMoves(g).length) return false;
+  if(g.mode==='rescue'){
+    const movable=g.board.map((c,i)=>c.companion?-1:i).filter(i=>i>=0);
+    for(let attempt=0;attempt<80;attempt++){for(let j=movable.length-1;j>0;j--)exchange(g.board,movable[j],movable[random(g,j+1)]);if(!findMatches(g.board,g.size).length&&legalMoves(g).length)return true;}
+    g.status='stuck';return false;
+  }
   // Preserve earned specials and frost during normal dead-board shuffles.
   for(let attempt=0;attempt<80;attempt++) {
     for(let i=g.board.length-1;i>0;i--) exchange(g.board,i,random(g,i+1));
@@ -61,6 +66,7 @@ export function createGame(level,attempt=0) {
 }
 export function goalProgress(g,t) { return Math.min(t.amount,t.kind==='frost'?g.frostCleared:g.collected[t.color]); }
 function finish(g) {
+  if(g.mode==='rescue'){g.status=g.rescued.length===g.companionIds.length?'won':g.moves<=0?'lost':'playing';return g.status==='playing'?playable(g):false;}
   g.status=g.targets.every(t=>goalProgress(g,t)>=t.amount)?'won':g.moves<=0?'lost':'playing';
   return g.status==='playing'?playable(g):false;
 }
@@ -95,6 +101,13 @@ function collapse(g) {
       if(to!==from) {g.board[to]=g.board[from];g.board[from]=null;falls.push({from,to});}
       write--;
     }
+    if(g.mode==='rescue'&&g.exits.includes(x)){
+      while(g.board[(n-1)*n+x]?.companion){
+        g.rescued.push(g.board[(n-1)*n+x].companion);
+        for(let y=n-1;y>write+1;y--){g.board[y*n+x]=g.board[(y-1)*n+x];falls.push({from:(y-1)*n+x,to:y*n+x});}
+        write++;g.board[write*n+x]=null;
+      }
+    }
     for(let y=write;y>=0;y--) {const to=y*n+x;g.board[to]={color:random(g,g.palette),special:''};falls.push({from:-(write-y+1)*n+x,to});}
   }
   return falls;
@@ -124,6 +137,7 @@ function resolve(g,preferred=-1,initial=[]) {
     }
     const surviving=created.filter(c=>!blast.has(c.index));
     for(const i of clear) {
+      if(g.board[i].companion)continue;
       if(g.board[i].color>=0) g.collected[g.board[i].color]++;
       if(g.frost[i]>0) {g.frost[i]--;g.frostCleared++;}
       g.board[i]=null;
@@ -136,6 +150,7 @@ function resolve(g,preferred=-1,initial=[]) {
     extra=[];preferred=-1;
   }
   // Bound pathological RNG cascades instead of freezing the UI.
+  if(findMatches(g.board,g.size).length&&g.mode==='rescue'){g.status='stuck';return {ok:true,game:g,frames,reshuffled:false};}
   if(findMatches(g.board,g.size).length) {freshBoard(g);frames.push({board:copyBoard(g.board),frost:[...g.frost],cleared:[],created:[],falls:[],combo:0,rescue:true});}
   const reshuffled=finish(g);
   if(reshuffled) frames.push({board:copyBoard(g.board),frost:[...g.frost],cleared:[],created:[],falls:[],combo:0,reshuffled:true});
@@ -143,7 +158,7 @@ function resolve(g,preferred=-1,initial=[]) {
 }
 export function resolveBoard(game,preferred=-1) { return resolve(clone(game),preferred); }
 export function swap(game,a,b) {
-  if(game.status!=='playing'||!adjacent(a,b,game.size)) return {ok:false,game,frames:[]};
+  if(game.status!=='playing'||!adjacent(a,b,game.size)||game.board[a]?.companion||game.board[b]?.companion) return {ok:false,game,frames:[]};
   const g=clone(game), ca=g.board[a],cb=g.board[b];exchange(g.board,a,b);
   const initial=[],triggeredSpecials=[ca.special,cb.special].filter(Boolean);
   if(ca.special==='prism'||cb.special==='prism') {
