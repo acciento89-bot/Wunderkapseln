@@ -33,3 +33,30 @@ test('actual native lifecycle bridge routes Android focus gates through rescue w
  time=50000;handlers.get('blur')();handlers.get('focus')();boundary.tick();assert.equal(rescue.getSnapshot().paused,true);assert.equal(classic.foreground,false);assertHeld();
  boundary.leave();assert.equal(classic.getSnapshot().modal,'pause');assertHeld();stop();
 });
+async function deferredWriteFixture({started=true}={}){
+ const a=memory(),c=new RescueController({storage:a});await c.initialize();if(started)await c.start('rescue-01');
+ const original=a.setItem;let release,entered;const waiting=new Promise(resolve=>{entered=resolve;});
+ a.setItem=async(k,v)=>{entered();await new Promise(resolve=>{release=resolve;});return original(k,v);};
+ return {a,c,waiting,release:()=>{a.setItem=original;release();}};
+}
+test('delayed restart preserves a newer blur and focus-return pause while saving the new board',async()=>{
+ const f=await deferredWriteFixture();const revision=f.c.getSnapshot().journal.revision;const op=f.c.restart();await f.waiting;
+ f.c.setForeground(false);f.c.setForeground(true);f.release();assert.equal(await op,true);
+ assert.equal(f.c.getSnapshot().paused,true);assert.equal(f.c.getSnapshot().journal.revision,revision+1);assert.equal(await f.c.move(56,57),false);
+});
+test('delayed restart preserves newer back-to-puzzles navigation and durable state',async()=>{
+ const f=await deferredWriteFixture();const op=f.c.restart();await f.waiting;f.c.leave();f.release();assert.equal(await op,true);
+ assert.equal(f.c.getSnapshot().screen,'list');assert.equal(f.c.getSnapshot().paused,true);assert.equal((await createRescueStore(f.a).load()).game.rescueId,'rescue-01');
+});
+test('normal delayed foreground restart still resumes the successfully saved board',async()=>{
+ const f=await deferredWriteFixture();const op=f.c.restart();await f.waiting;f.release();assert.equal(await op,true);
+ assert.equal(f.c.getSnapshot().screen,'game');assert.equal(f.c.getSnapshot().paused,false);assert.equal(await f.c.move(56,57),true);
+});
+test('delayed first start preserves newer list navigation after its durable save',async()=>{
+ const f=await deferredWriteFixture({started:false});const op=f.c.start('rescue-01');await f.waiting;f.c.leave();f.release();assert.equal(await op,true);
+ assert.equal(f.c.getSnapshot().screen,'list');assert.equal(f.c.getSnapshot().paused,true);assert.equal((await createRescueStore(f.a).load()).game.rescueId,'rescue-01');
+});
+test('delayed first start does not auto-resume after blur and focus-return',async()=>{
+ const f=await deferredWriteFixture({started:false});const op=f.c.start('rescue-01');await f.waiting;f.c.setForeground(false);f.c.setForeground(true);f.release();assert.equal(await op,true);
+ assert.equal(f.c.getSnapshot().paused,true);assert.equal(await f.c.move(56,57),false);
+});

@@ -2,7 +2,7 @@ import {createRescueStore,freshRescueJournal} from './rescue-storage.mjs';
 import {createRescueGame,applyRescueMove,applyRescueWonder} from './rescue.mjs';
 import {RESCUE_LEVELS,rescueLevelFor} from './rescue-levels.mjs';
 export class RescueController{
- constructor({storage}){this.store=createRescueStore(storage);this.listeners=new Set();this.foreground=true;this.loading=null;this.state={loaded:false,journal:freshRescueJournal(),pending:null,error:null,busy:false,paused:true,selected:-1,screen:'list'};}
+ constructor({storage}){this.store=createRescueStore(storage);this.listeners=new Set();this.foreground=true;this.loading=null;this.intent=0;this.state={loaded:false,journal:freshRescueJournal(),pending:null,error:null,busy:false,paused:true,selected:-1,screen:'list'};}
  getSnapshot=()=>this.state;
  subscribe=fn=>{this.listeners.add(fn);return()=>this.listeners.delete(fn);};
  emit(patch){this.state={...this.state,...patch};for(const fn of this.listeners)fn();}
@@ -24,9 +24,12 @@ export class RescueController{
    if(held.rescueId!==id){this.emit({screen:'game',paused:true,error:'rescueHeld'});return false;}
    this.emit({screen:'game',paused:false,error:null});return true;
   }
-  const ok=await this.commit({...this.state.journal,game:createRescueGame(l)});if(ok)this.emit({screen:'game',paused:!this.foreground});return ok;
+  const intent=this.intent;
+  const ok=await this.commit({...this.state.journal,game:createRescueGame(l)});
+  // Saving publishes the board; only the still-current navigation intent may activate it.
+  if(ok&&intent===this.intent&&this.foreground)this.emit({screen:'game',paused:false});return ok;
  }
- async restart(){if(this.state.pending||this.state.busy||!this.state.journal.game||!this.foreground)return false;const ok=await this.commit({...this.state.journal,game:createRescueGame(rescueLevelFor(this.state.journal.game.rescueId))});if(ok)this.emit({paused:false,screen:'game'});return ok;}
+ async restart(){if(this.state.pending||this.state.busy||!this.state.journal.game||!this.foreground)return false;const intent=this.intent;const ok=await this.commit({...this.state.journal,game:createRescueGame(rescueLevelFor(this.state.journal.game.rescueId))});if(ok&&intent===this.intent&&this.foreground)this.emit({paused:false,screen:'game'});return ok;}
  async apply(result){
   if(!result.ok)return false;const game=result.game,journal={...this.state.journal,game};
   if(game.status==='won'){
@@ -39,7 +42,7 @@ export class RescueController{
  async wonder(target){if(!this.canPlay())return false;return this.apply(applyRescueWonder(this.state.journal.game,target));}
  canPlay(){return this.state.loaded&&this.foreground&&!this.state.paused&&!this.state.busy&&!this.state.pending&&this.state.journal.game?.status==='playing';}
  tap(index){if(!this.canPlay())return;if(this.state.selected<0){this.emit({selected:index});return;}const from=this.state.selected;this.emit({selected:-1});return this.move(from,index);}
- pause(){this.emit({paused:true,selected:-1});}
+ pause(){this.intent++;this.emit({paused:true,selected:-1});}
  resume(){if(this.foreground&&!this.state.pending&&!this.state.busy)this.emit({paused:false,screen:'game',error:null});}
  leave(){this.pause();this.emit({screen:'list'});}
  setForeground(value){this.foreground=value;if(!value)this.pause();}
