@@ -7,13 +7,14 @@ export function musicAllowed({campaign,rescue,inRescue,foreground}) {
 
 /** A hook owns the native player. We only play/pause it; never release it here. */
 export function createMusicDriver(player,{configured=Promise.resolve(true)}={}) {
-  let wanted=false,playing=false,disposed=false,generation=0;
+  let wanted=false,playing=false,disposed=false,generation=0,configurationReady=false;
+  const setup=Promise.resolve(configured).then(value=>{configurationReady=Boolean(value);return configurationReady;},()=>false);
   const pause=()=>{try {player.pause();} catch {/* Native output may already be gone. */} playing=false;};
   // Android may restore native playback on foreground return after our earlier
   // AppState pause. Enforce the current policy without rerendering the game.
   const statusSubscription=typeof player.addListener==='function'
     ?player.addListener('playbackStatusUpdate',status=>{
-      if(!disposed&&status.playing&&(!wanted||!playing))pause();
+      if(!disposed&&status.playing&&(!wanted||!configurationReady))pause();
     }):null;
   return {
     async update(allowed) {
@@ -23,7 +24,8 @@ export function createMusicDriver(player,{configured=Promise.resolve(true)}={}) 
       wanted=next;const request=++generation;
       if (!next) {pause();return false;}
       try {
-        if (!await configured || disposed || !wanted || request!==generation) return false;
+        if (!configurationReady && !await setup) return false;
+        if (disposed || !wanted || request!==generation) return false;
         player.loop=true;player.volume=0.18;playing=true;player.play();return true;
       } catch {playing=false;return false;}
     },
