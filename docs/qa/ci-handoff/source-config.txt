@@ -1,0 +1,23 @@
+
+> wunderkapseln@0.5.0 check:build
+> node tools/check-build.mjs --source-only
+
+{
+  "schema": 1,
+  "version": "0.5.0",
+  "sourceConfigValid": true,
+  "lockMetadataValid": false,
+  "nativeBuildVerified": false,
+  "evidence": "offline-metadata-only",
+  "configErrors": [],
+  "lockErrors": [
+    "missing_lockfile"
+  ],
+  "nextRequiredEvidence": [
+    "npm-ci",
+    "expo-compatibility-check",
+    "android-ios-exports",
+    "native-build",
+    "device-tests"
+  ]
+}

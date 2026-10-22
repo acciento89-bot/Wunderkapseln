@@ -1,0 +1,10 @@
+import sharp from 'sharp';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { iconSvg } from '../ui/art.mjs';
+const root=fileURLToPath(new URL('../assets/',import.meta.url));
+await mkdir(root,{recursive:true});
+const svg=iconSvg();
+await writeFile(`${root}icon.svg`,svg);
+await sharp(Buffer.from(svg)).resize(1024,1024).removeAlpha().png().toFile(`${root}icon.png`);
+console.log('Canonical 1024px icon generated. App icon and splash reference the same file.');

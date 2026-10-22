@@ -1,0 +1,181 @@
+{
+  "count": 44,
+  "files": [
+    {
+      "path": "assets/icon.png",
+      "sha256": "8afc7dda589485f3aa570ad8add588ef1831e81590b96bf2e96ee427dacbeb10"
+    },
+    {
+      "path": "assets/audio/prism.wav",
+      "sha256": "cac5f98ead842aa5fbc4f000f2f28610e42894f9a6cbc59842f9bd838500e0e5"
+    },
+    {
+      "path": "assets/audio/restoration.wav",
+      "sha256": "a240466fabe6893235f8bbccd31ac6eaac1e0cd644ac1fcd52b7dcc584a1c03c"
+    },
+    {
+      "path": "assets/audio/bloom.wav",
+      "sha256": "44bcfb20682d8ad80ac70a4fac6963669816c645a2b3b7f3a70801c3a7853703"
+    },
+    {
+      "path": "assets/audio/wonder.wav",
+      "sha256": "41facfd7975eb92c01f928208625428f4b9fc2f2b8bb09f107a7bc9307fbea55"
+    },
+    {
+      "path": "assets/audio/lost.wav",
+      "sha256": "a76ba7baf3d216edd2e9324de71f7bb7928552647de4305e736f6bd5ff20140b"
+    },
+    {
+      "path": "assets/audio/mega.wav",
+      "sha256": "d0fb5317d8ca7fc65ba170983a7971fe64d593943fc9063125628c4452e7bc37"
+    },
+    {
+      "path": "assets/audio/match.wav",
+      "sha256": "5f997e0dface760cd56b609eaba59745df8dc2ef8244cf6a0d50d78157ec535a"
+    },
+    {
+      "path": "assets/audio/win.wav",
+      "sha256": "c90073e14a9cbc5030d4c0dfbc0cb76e92f9d3806b40b11e54ae2657b2c8fd55"
+    },
+    {
+      "path": "assets/audio/tide.wav",
+      "sha256": "add17b79d5cdeea683331899084723f804b7f8b0147bd30315b5360eaaaba1e3"
+    },
+    {
+      "path": "assets/audio/charge.wav",
+      "sha256": "e0a1224eab4018b0d4a43d72c82a29bd683a38e46348fe9874883bb3cbb2c72d"
+    },
+    {
+      "path": "assets/audio/wind.wav",
+      "sha256": "e028c86e45c4e613d1bd9958167414a5420dcd7b2169653b4babce9587a6ded3"
+    },
+    {
+      "path": "assets/audio/rocket.wav",
+      "sha256": "15164511351eb76ad7d490082883efcddf99d9cbd587d1445358303bdd8c75ee"
+    },
+    {
+      "path": "assets/audio/combo.wav",
+      "sha256": "afdd656d34aaf7338ac3a6a59cbae25ceae464a70fac782a083fc30502e911b1"
+    },
+    {
+      "path": "assets/audio/bomb.wav",
+      "sha256": "72b5bf799b405aea3b4b26341f4115f23c99cc72489381de817320f3d17fdb02"
+    },
+    {
+      "path": "assets/icon.svg",
+      "sha256": "cae780d89556f4c8798a4e9d29d63efb0f5618f97177c62e630255bdf9d70711"
+    },
+    {
+      "path": "native/runtime.mjs",
+      "sha256": "9221d93589f93606bda753b1affde89150d14801433ea5cc0174d0db1776c083"
+    },
+    {
+      "path": "native/player-adapter.mjs",
+      "sha256": "21049e09b40a582ece132ac3ca565fc62f06e4888cf85fdd68d9922d214d2bb6"
+    },
+    {
+      "path": "native/modal.mjs",
+      "sha256": "dbb5dd979b452b2694d43e70a876d637cf8743233cf3da8aee4285d05080209a"
+    },
+    {
+      "path": "native/useGameAudio.js",
+      "sha256": "7ac1f28556e2bf9978611809350ab5a150a0555cd8e14cbe5200109fb47f421b"
+    },
+    {
+      "path": "app.json",
+      "sha256": "05f25c61a39279189c90481d31a5fb8eab6dd51c392538b6ebfe59807ecf0a87"
+    },
+    {
+      "path": "package.json",
+      "sha256": "11efa0fea9a120afaca0c93eff32ff5a6ae30a10e753a518ae9821146498b492"
+    },
+    {
+      "path": "web/app.mjs",
+      "sha256": "f329fb4e81d3c2adc728d20c2c76f98a1013a6f0540c5f60fd186f6429c0a947"
+    },
+    {
+      "path": "web/audio.mjs",
+      "sha256": "b550dc46cad1dda14e280bfea7c55f0fbe5033aa4c1b40d10499611554955cf3"
+    },
+    {
+      "path": "web/style.css",
+      "sha256": "58992e988588973df2692fc879c2f1700b46d538d4291cb92ca74eb04efae735"
+    },
+    {
+      "path": "web/index.html",
+      "sha256": "9213918a9b82a9d74f1ab9423a4f5f27a7adfc7e59bacde4ae1b78260e855976"
+    },
+    {
+      "path": "index.js",
+      "sha256": "7a206cb9a18c6ee95a18ea6eea5fd4cbe119ac1db3094c545aa94c2f8b8588e0"
+    },
+    {
+      "path": "ui/input.mjs",
+      "sha256": "69f81b20cc8158efccd1e922002163496aeffc2bd4968e37053e40d6a56d4e63"
+    },
+    {
+      "path": "ui/strings.mjs",
+      "sha256": "e1133b0ec6bdec6cab604022b05f245f0fd75a14e59ee7fc4da3493adb9a2399"
+    },
+    {
+      "path": "ui/art.mjs",
+      "sha256": "dacd11efc209a68bb6de6e2a08921504d4742ca1e6710f857c26f49ce71532ed"
+    },
+    {
+      "path": "ui/world-scenes.mjs",
+      "sha256": "f25003e778732a9aa9ab0280e9aade33b753eaaee48c527d45d10c16a512a14b"
+    },
+    {
+      "path": "ui/sounds.mjs",
+      "sha256": "8467ad108c14cf77ddefa4d4c700c2f371d3c6fd19a18b4f0182a7fc3f5f4f9b"
+    },
+    {
+      "path": "ui/icon.mjs",
+      "sha256": "dbb88c0565e0f61a82d04c20c14ef370b7124bfc2ed416c04d10f3c09950d200"
+    },
+    {
+      "path": "App.js",
+      "sha256": "23641e54bc4357c5f2b2fb12ab1b1c431fe07419e1bbd7382c342d3bb9cc8b7f"
+    },
+    {
+      "path": "core/profile.mjs",
+      "sha256": "9409e4071ff94287ff58ae448aec7f56914ee5289a7f5bb1ef0bae25259e279e"
+    },
+    {
+      "path": "core/storage.mjs",
+      "sha256": "372aa464bf1aee8fb8aacaa96221b3180480bebb398a1dbfe9fcb8c2582882ca"
+    },
+    {
+      "path": "core/restoration.mjs",
+      "sha256": "63644c4ba8133b3c4f019f6d65d2c53a8fd58d0b840a9d3c856ad14fc8e14263"
+    },
+    {
+      "path": "core/game.mjs",
+      "sha256": "cec08f1d04b573aaea638415e3f353b42a345df8c98468e6d2e9f6c9f67acbef"
+    },
+    {
+      "path": "core/feedback.mjs",
+      "sha256": "3a45ba43513b0c6934febb979df3fe24585ff8813938252105b33a768879b384"
+    },
+    {
+      "path": "core/strategy.mjs",
+      "sha256": "773be120df320274235b95327820f41eaa09fea2c31bceb88ad04ef9028b71a8"
+    },
+    {
+      "path": "core/voice-pool.mjs",
+      "sha256": "bd3f0907615bb342603077f4bd1d8151295649b6f69ddf08344135149d6b18ba"
+    },
+    {
+      "path": "core/levels.mjs",
+      "sha256": "94e0965d2d23b9aa02620c149710145e243225558be11c7d7fc9f7516671aaae"
+    },
+    {
+      "path": "core/controller.mjs",
+      "sha256": "3f259847944635af34ae8ee78a436808d377aaf72d5d92c62224f87bd3062fd2"
+    },
+    {
+      "path": "core/session.mjs",
+      "sha256": "17466c2bb2c4962d36e31cde1983013c155876ee458809dc9ce4e77c9fc7e1c4"
+    }
+  ]
+}
