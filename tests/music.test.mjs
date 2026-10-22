@@ -91,3 +91,12 @@ test('native status cannot play before successful configuration, and disposal pr
  d.dispose();assert.equal(p.removed,1);assert.equal(p.nativePlaying,false);
  const rejected=nativePlayer(),other=createMusicDriver(rejected,{configured:Promise.resolve(false)});await other.update(true);rejected.systemResume();assert.equal(rejected.nativePlaying,false);other.dispose();
 });
+
+test('configured foreground autoplay is allowed during an already-approved resume transition',async()=>{
+ const p=nativePlayer(),d=createMusicDriver(p);await d.update(true);await d.update(false);
+ const pauses=p.pauses,starting=d.update(true);
+ // Expo can emit its automatic foreground play before an awaited JS play settles.
+ // This transition is allowed and configured; a queued pause would silence the list.
+ p.systemResume();assert.equal(p.nativePlaying,true);assert.equal(p.pauses,pauses);
+ await starting;assert.equal(p.nativePlaying,true);d.dispose();
+});
