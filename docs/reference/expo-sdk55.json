@@ -5,12 +5,13 @@
   "audioDocumentation": "https://docs.expo.dev/versions/v55.0.0/sdk/audio/",
   "note": "SDK-55 versions checked on the authorized Mac using the installed Expo package and expo install --check. package-lock.json records the actual dependency resolution; this manifest is not native build evidence.",
   "dependencies": {
-    "expo": "55.0.31",
+    "expo": "55.0.32",
     "react": "19.2.0",
     "react-native": "0.83.10",
     "react-native-svg": "15.15.3",
     "@react-native-async-storage/async-storage": "2.2.0",
     "react-native-safe-area-context": "~5.6.2",
     "expo-audio": "~55.0.16"
-  }
+  },
+  "patchVerification": "2026-10-22: official Expo compatibility check required ~55.0.32; exact npm registry package 55.0.32 selected."
 }
