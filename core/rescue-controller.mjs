@@ -45,6 +45,6 @@ export class RescueController{
  pause(){this.intent++;this.emit({paused:true,selected:-1});}
  resume(){if(this.foreground&&!this.state.pending&&!this.state.busy)this.emit({paused:false,screen:'game',error:null});}
  leave(){this.pause();this.emit({screen:'list'});}
- setForeground(value){this.foreground=value;if(!value)this.pause();}
+ setForeground(value){this.foreground=value;if(!value)this.pause();else this.emit();}
  tick(){} // Rescue has no paid clock, regeneration or background simulation.
 }

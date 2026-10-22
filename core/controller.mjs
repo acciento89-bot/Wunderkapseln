@@ -94,7 +94,7 @@ export class GameController {
   abandon(){this.cancelAnimation();this.emit({session:abandonLevel(this.state.session,this.now()),screen:'home',modal:null,selected:-1,wonder:false});this.save();}
   next(){const id=this.state.session.game?.levelId??1;if(id>=480){this.navigate('atlas');return;}this.play(id+1);}
   retry(){this.play(this.state.session.game?.levelId);}
-  preference(key,value) {if(!this.state.loaded)return;if(!['language','reducedMotion','haptics','sound'].includes(key))return;if(key==='language'?!['de','en'].includes(value):typeof value!=='boolean')return;this.emit({session:{...this.state.session,profile:{...this.state.session.profile,[key]:value}}});this.save();}
+  preference(key,value) {if(!this.state.loaded)return;if(!['language','reducedMotion','haptics','sound','music'].includes(key))return;if(key==='language'?!['de','en'].includes(value):typeof value!=='boolean')return;this.emit({session:{...this.state.session,profile:{...this.state.session.profile,[key]:value}}});this.save();}
   activate(key){if(!this.state.loaded)return;this.tick();try{const s=this.state.session,profile=activatePack(s.profile,key);this.emit({session:{...s,profile,protectedAttempt:s.protectedAttempt||(s.game?.status==='playing'&&profile.unlimitedSeconds>0)}});this.save();}catch(error){this.emit({notice:error.message?.includes('capacity')?'packCapacity':'notAvailable'});}}
   applyPaidAllocation(allocation) {
     const operation=this.purchaseTail.then(async()=>{

@@ -61,7 +61,7 @@ const copy={
   purchaseCapacity:['Dein Vorrat ist voll. Der Store-Kauf bleibt offen und wird sp\u00e4ter erneut zugestellt.','Your inventory is full. The store purchase remains open and will be delivered later.'],
   purchaseComplete:['Kauf erfolgreich gutgeschrieben.','Purchase delivered successfully.'],purchaseCancelled:['Kauf abgebrochen.','Purchase cancelled.'],
   packLives:['5 zus\u00e4tzliche Leben','5 extra lives'],packHour:['1 Stunde ohne Lebensverlust','1 hour without losing lives'],packFour:['4 Stunden ohne Lebensverlust','4 hours without losing lives'],
-  sound:['Klang-Effekte','Sound effects'],language:['Sprache','Language'],german:['Deutsch','German'],english:['Englisch','English'],motion:['Weniger Bewegung','Reduced motion'],haptics:['Haptisches Feedback','Haptic feedback'],
+  sound:['Klang-Effekte','Sound effects'],music:['Hintergrundmusik','Background music'],language:['Sprache','Language'],german:['Deutsch','German'],english:['Englisch','English'],motion:['Weniger Bewegung','Reduced motion'],haptics:['Haptisches Feedback','Haptic feedback'],
   localPrivacy:['Dein Spielstand bleibt auf diesem Ger\u00e4t. Kein Konto, keine Analyse-Tracker, keine Werbung in dieser Alpha.','Your progress stays on this device. No account, analytics trackers or advertising in this alpha.'],
   packCapacity:['Dein Vorrat ist voll. Das Paket bleibt unber\u00fchrt in deiner Schatzkammer.','Your reserve is full. The pack stays untouched in your inventory.'],
   saveError:['Speichern gerade nicht m\u00f6glich. Bitte die App nicht schlie\u00dfen.','Unable to save right now. Please keep the app open.'],

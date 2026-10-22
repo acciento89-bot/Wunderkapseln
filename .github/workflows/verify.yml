@@ -147,7 +147,7 @@ jobs:
           retention-days: 14
 
   android-preview:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/store-purchases-build9'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/feature/store-purchases-build9' || github.ref == 'refs/heads/feature/rescue-chapter-20261021')
     needs: [rules-and-preview, native-resolution, native-bundles]
     runs-on: ubuntu-24.04
     timeout-minutes: 40

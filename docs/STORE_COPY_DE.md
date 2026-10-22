@@ -14,7 +14,7 @@ Match-3 trifft Miniaturwelten
 
 ## Google Play Kurzbeschreibung (65 Zeichen)
 
-Kombiniere Steine und erwecke kleine Welten unter Glas zum Leben.
+Match-3 in Miniaturwelten: 480 Kampagnenlevel und zwölf Rettungsrätsel.
 
 ## Apple Promo-Text (131 Zeichen)
 
@@ -44,9 +44,14 @@ Die Kampagne funktioniert offline. Ein laufendes Level laesst sich fortsetzen. T
 
 Kein Konto erforderlich. Der aktuelle Spielstand wird lokal auf deinem Geraet gespeichert. Eine geraeteuebergreifende Cloud-Sicherung ist nicht enthalten.
 
+Neu: Rettet die Gefährten
+Löse zwölf eigenständige Rettungsrätsel und bringe die Gefährten zu den markierten Ausgängen. Spezialsteine, Frost und mehrere Gefährten sorgen für neue Aufgaben. Ein eigener Speicherstand hält deinen Fortschritt getrennt von der Kampagne.
+
+Ruhige Gartenmusik begleitet dein Spiel. Musik und Klangeffekte lassen sich unabhängig voneinander einstellen.
+
 ## Versionshinweise (131 Zeichen)
 
-Technische Stabilisierung und Vorbereitung der nativen Android- und iOS-Buildkette.
+Neues Rettungskapitel mit zwölf Rätseln, Gefährten und eigenen Speicherständen. Neue Gartenmusik mit separatem Schalter. Fortschritt bei Unterbrechungen und fehlgeschlagenem Speichern geschützt.
 
 ## Metadaten und Assets
 

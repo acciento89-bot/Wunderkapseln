@@ -6,6 +6,7 @@ import { screenMetrics, fitBoardSize } from './ui/layout.mjs';
 import { createGameModal } from './native/modal.mjs';
 import { attachNativeRuntime } from './native/runtime.mjs';
 import { useGameAudio } from './native/useGameAudio.js';
+import {useGameMusic} from './native/useGameMusic.js';
 import { restorationFor } from './core/restoration.mjs';
 import React, { memo, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, Modal, StatusBar, AppState, PanResponder, Animated, AccessibilityInfo, Vibration, BackHandler, useWindowDimensions, Platform } from 'react-native';
@@ -80,6 +81,7 @@ function Experience(){
  const enterRescue=()=>{rescueVisible.current=true;rescueBoundary.enter();setInRescue(true);};
  const exitRescue=()=>{rescueVisible.current=false;rescueBoundary.leave();setInRescue(false);};
  useGameAudio(controller);
+ useGameMusic(controller,rescueController,inRescue);
  const state=useSyncExternalStore(controller.subscribe,controller.getSnapshot,controller.getSnapshot);
  const purchases=usePurchases(controller,state.screen==='treasures');
  const insets=useSafeAreaInsets(),{width:screenWidth,height:screenHeight}=useWindowDimensions();
@@ -144,7 +146,7 @@ function Experience(){
   </>;
   if(state.screen==='settings')return <>
    {heading(tr('alpha'),tr('settings'))}<View style={styles.panel}><Text style={styles.title}>{tr('language')}</Text><View style={styles.row}>{['de','en'].map(code=><Action key={code} style={{flex:1}} small secondary={lang!==code} label={tr(code==='de'?'german':'english')} onPress={()=>controller.preference('language',code)}/>)}</View></View>
-   {[['sound','sound'],['reducedMotion','motion'],['haptics','haptics']].map(([key,label])=><Pressable accessibilityRole="switch" accessibilityState={{checked:p[key]}} accessibilityLabel={tr(label)} key={key} onPress={()=>controller.preference(key,!p[key])} style={styles.setting}><Text style={styles.label}>{tr(label)}</Text><View style={[styles.switch,p[key]&&styles.switchOn]}><View style={[styles.switchKnob,p[key]&&{alignSelf:'flex-end'}]}/></View></Pressable>)}
+   {[['sound','sound'],['music','music'],['reducedMotion','motion'],['haptics','haptics']].map(([key,label])=><Pressable accessibilityRole="switch" accessibilityState={{checked:p[key]}} accessibilityLabel={tr(label)} key={key} onPress={()=>controller.preference(key,!p[key])} style={styles.setting}><Text style={styles.label}>{tr(label)}</Text><View style={[styles.switch,p[key]&&styles.switchOn]}><View style={[styles.switchKnob,p[key]&&{alignSelf:'flex-end'}]}/></View></Pressable>)}
    <View style={styles.panel}><Text style={styles.muted}>{tr('localPrivacy')}</Text></View>
   </>;
   return null;

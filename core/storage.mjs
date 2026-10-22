@@ -14,6 +14,7 @@ export function decodeSave(text) {
     if(s.game!==null&&(!validateGame(s.game)||s.game.levelId>s.profile.unlocked)) return null;
     if(s.game&&((s.game.status==='playing')===s.settled)) return null;
     if(s.profile.sound===undefined)s.profile.sound=true;
+    if(s.profile.music===undefined)s.profile.music=true;
     if(s.profile.reserveLives===undefined)s.profile.reserveLives=0;
     return s;
   } catch {return null;}

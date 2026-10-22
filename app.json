@@ -2,7 +2,7 @@
   "expo": {
     "name": "Wunderkapseln",
     "slug": "wunderkapseln",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "icon": "./assets/icon.png",
@@ -24,7 +24,7 @@
     },
     "android": {
       "package": "com.kamilunavo.wunderkapseln",
-      "versionCode": 9,
+      "versionCode": 10,
       "permissions": [
         "android.permission.VIBRATE"
       ],

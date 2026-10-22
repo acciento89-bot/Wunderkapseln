@@ -3,7 +3,7 @@ const PACKS={time10:600,time60:3600,time240:14400};
 const PURCHASE_IDS_MAX=2048;
 const copy=p=>({...p,reserveLives:p.reserveLives??0,stars:{...p.stars},inventory:{...p.inventory},appliedPurchaseIds:[...(p.appliedPurchaseIds??[])]});
 export function freshProfile(now=Date.now(),locale='en') {
-  return {lives:5,reserveLives:0,nextLifeAt:null,lastSeenAt:now,unlocked:1,stars:{},sparkles:0,unlimitedSeconds:0,inventory:{lives5:0,time10:1,time60:0,time240:0},appliedPurchaseIds:[],language:String(locale).toLowerCase().startsWith('de')?'de':'en',reducedMotion:false,haptics:true,sound:true};
+  return {lives:5,reserveLives:0,nextLifeAt:null,lastSeenAt:now,unlocked:1,stars:{},sparkles:0,unlimitedSeconds:0,inventory:{lives5:0,time10:1,time60:0,time240:0},appliedPurchaseIds:[],language:String(locale).toLowerCase().startsWith('de')?'de':'en',reducedMotion:false,haptics:true,sound:true,music:true};
 }
 export function regenerate(profile,now=Date.now()) {
   const p=copy(profile), clock=Number.isFinite(now)?Math.max(now,p.lastSeenAt):p.lastSeenAt;p.lastSeenAt=clock;
@@ -66,7 +66,7 @@ export function spendActiveTime(profile,seconds,active) {
 export function remainingLifeSeconds(p,now=Date.now()) {return p.nextLifeAt===null?0:Math.max(0,Math.ceil((p.nextLifeAt-Math.max(now,p.lastSeenAt))/1000));}
 export function validateProfile(p) {
   const integer=(x,min,max)=>Number.isInteger(x)&&x>=min&&x<=max;
-  if(!p||!integer(p.lives,0,5)||(p.reserveLives!==undefined&&!integer(p.reserveLives,0,9999))||!integer(p.unlocked,1,480)||!integer(p.sparkles,0,1000000)||!Number.isFinite(p.lastSeenAt)||p.lastSeenAt<0||!(p.nextLifeAt===null||Number.isFinite(p.nextLifeAt)&&p.nextLifeAt>=0)||!Number.isFinite(p.unlimitedSeconds)||p.unlimitedSeconds<0||p.unlimitedSeconds>864000||!['de','en'].includes(p.language)||typeof p.reducedMotion!=='boolean'||typeof p.haptics!=='boolean'||(p.sound!==undefined&&typeof p.sound!=='boolean')||!p.stars||typeof p.stars!=='object'||Array.isArray(p.stars)||!p.inventory||typeof p.inventory!=='object') return false;
+  if(!p||!integer(p.lives,0,5)||(p.reserveLives!==undefined&&!integer(p.reserveLives,0,9999))||!integer(p.unlocked,1,480)||!integer(p.sparkles,0,1000000)||!Number.isFinite(p.lastSeenAt)||p.lastSeenAt<0||!(p.nextLifeAt===null||Number.isFinite(p.nextLifeAt)&&p.nextLifeAt>=0)||!Number.isFinite(p.unlimitedSeconds)||p.unlimitedSeconds<0||p.unlimitedSeconds>864000||!['de','en'].includes(p.language)||typeof p.reducedMotion!=='boolean'||typeof p.haptics!=='boolean'||(p.sound!==undefined&&typeof p.sound!=='boolean')||(p.music!==undefined&&typeof p.music!=='boolean')||!p.stars||typeof p.stars!=='object'||Array.isArray(p.stars)||!p.inventory||typeof p.inventory!=='object') return false;
   if(Object.entries(p.stars).some(([key,value])=>!/^\d+$/.test(key)||!integer(Number(key),1,480)||!integer(value,1,3))) return false;
   for(let i=1;i<p.unlocked;i++) if(!p.stars[i]) return false;
   if(Object.keys(p.stars).some(id=>Number(id)>p.unlocked)) return false;

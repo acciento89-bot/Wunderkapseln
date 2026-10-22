@@ -14,7 +14,7 @@ Match-3 in miniature worlds
 
 ## Google Play Kurzbeschreibung (64 Zeichen)
 
-Match colourful tiles and bring tiny worlds under glass to life.
+Match-3 miniature worlds: 480 campaign levels and twelve rescue puzzles.
 
 ## Apple Promo-Text (124 Zeichen)
 
@@ -44,9 +44,14 @@ The campaign works offline. Resume an unfinished level and adjust sound, reduced
 
 No account is required. Your current progress is stored locally on your device. Cross-device cloud backup is not included.
 
+New: rescue the companions
+Solve twelve separate rescue puzzles and guide companions to the marked exits. Special pieces, frost and multiple companions add new challenges. A separate save keeps rescue progress independent of the campaign.
+
+A gentle garden theme accompanies your game. Music and sound effects have independent settings.
+
 ## Versionshinweise (142 Zeichen)
 
-Technical stability improvements and preparation of the native Android and iOS build pipeline.
+New rescue chapter with twelve puzzles, companions and separate saves. New garden music with an independent switch. Progress protected across interruptions and failed saves.
 
 ## Metadaten und Assets
 

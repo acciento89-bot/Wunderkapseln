@@ -53,15 +53,22 @@ test('feature-branch CI performs a signing-free iOS simulator build on macOS 26'
   assert.doesNotMatch(ios, /archive|exportArchive|notary|fastlane|eas submit/i);
 });
 
-test('Build 9 advances Android after confirming the Play package has no existing version code', () => {
+test('rescue update advances the published Android build 9 without changing the pending Apple counter', () => {
   const pkg = JSON.parse(read('package.json'));
   const expo = JSON.parse(read('app.json')).expo;
-  assert.equal(pkg.version, '0.5.0');
-  assert.equal(expo.version, '0.5.0');
+  assert.equal(pkg.version, '0.6.0');
+  assert.equal(expo.version, '0.6.0');
   assert.equal(expo.ios.buildNumber, '9');
-  assert.equal(expo.android.versionCode, 9);
+  assert.equal(expo.android.versionCode, 10);
   assert.equal(expo.ios.bundleIdentifier, 'com.kamilunavo.wondercaps');
   assert.equal(expo.android.package, 'com.kamilunavo.wunderkapseln');
+});
+
+test('the rescue branch builds Android while the existing Apple native lane stays separate', () => {
+  const android = job(verify, 'android-preview');
+  const ios = job(verify, 'ios-simulator');
+  assert.match(android, /refs\/heads\/feature\/rescue-chapter-20261021/);
+  assert.doesNotMatch(ios, /rescue-chapter-20261021/);
 });
 
 test('canonical PNG app icon is explicitly allowed through gitignore', () => {
