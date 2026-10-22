@@ -70,3 +70,24 @@ test('music preference round trips, migrates old saves and cannot change the gam
  assert.equal(c.state.session.profile.music,false);const after=structuredClone(c.state.session);delete before.profile.music;delete after.profile.music;assert.deepEqual(after,before);
  const reopened=new GameController({storage:{getItem:async k=>data.get(k)??null,setItem:async(k,v)=>{data.set(k,v);}}});await reopened.initialize();assert.equal(reopened.state.session.profile.music,false);
 });
+
+function nativePlayer(){
+ let callback,last;const p=player();p.nativePlaying=false;p.removed=0;
+ p.addListener=(event,listener)=>{assert.equal(event,'playbackStatusUpdate');callback=last=listener;return {remove(){p.removed++;callback=null;}};};
+ p.play=()=>{p.plays++;p.nativePlaying=true;callback?.({playing:true});};
+ p.pause=()=>{p.pauses++;p.nativePlaying=false;callback?.({playing:false});};
+ p.systemResume=()=>{p.nativePlaying=true;callback?.({playing:true});};
+ p.lateStatus=()=>last?.({playing:true});return p;
+}
+test('native automatic resume cannot override a held pause or muted policy',async()=>{
+ const p=nativePlayer(),d=createMusicDriver(p);await d.update(true);assert.equal(p.nativePlaying,true);assert.equal(p.pauses,0);
+ await d.update(false);assert.equal(p.nativePlaying,false);p.systemResume();assert.equal(p.nativePlaying,false);
+ await d.update(false);p.systemResume();assert.equal(p.nativePlaying,false);d.dispose();assert.equal(p.removed,1);
+ const count=p.pauses;p.lateStatus();assert.equal(p.pauses,count);
+});
+test('native status cannot play before successful configuration, and disposal preserves hook ownership',async()=>{
+ const p=nativePlayer(),ready=deferred(),d=createMusicDriver(p,{configured:ready.promise});const starting=d.update(true);
+ p.systemResume();assert.equal(p.nativePlaying,false);ready.resolve(true);await starting;assert.equal(p.nativePlaying,true);
+ d.dispose();assert.equal(p.removed,1);assert.equal(p.nativePlaying,false);
+ const rejected=nativePlayer(),other=createMusicDriver(rejected,{configured:Promise.resolve(false)});await other.update(true);rejected.systemResume();assert.equal(rejected.nativePlaying,false);other.dispose();
+});
