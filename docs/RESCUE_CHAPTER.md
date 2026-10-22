@@ -15,3 +15,7 @@ Google update provenance and current maximum version require a fresh release che
 ## Android release preparation, 22 October 2026
 
 Fresh Google console readback established public 0.5.0 (9) as the highest uploaded version. Android candidate is 0.6.0 (10); iOS counter remains unchanged at 9. Android native compilation is enabled on this rescue branch; iOS native compilation and store delivery are deferred. No current candidate has yet passed native acceptance or been submitted.
+
+## Native mobile control correction
+
+The first Android candidate compiled and signed, but actual native acceptance withheld it: the shared scrolling container retained its offset across puzzles, and pause/resume or save-retry controls could fall below the viewport. Puzzle identity, state and Pause/Resume now sit outside the board scroll, with fixed error/retry notices. Each puzzle and the list have separate scroll identities. Game screens omit the list-only introduction. Four tests render the actual component through a small native host and cover fixed controls, held pause, per-puzzle scroll identity and a real failed-save Retry. Native geometry and touch acceptance still require a fresh build. The obsolete Alpha 0.3 label was replaced with a neutral game tagline.
