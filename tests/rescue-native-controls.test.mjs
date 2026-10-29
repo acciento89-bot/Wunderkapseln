@@ -6,6 +6,8 @@ import {RescueController} from '../core/rescue-controller.mjs';
 // Render the real component with a small native host: no source-order regex or
 // duplicated layout policy. Device geometry remains a separate native gate.
 let source=readFileSync(new URL('../ui/RescueChapter.js',import.meta.url),'utf8');
+// This native host supplies Text; font loading has its own APK/device gate.
+source=source.replace("import { Text } from './product-type.js';\n",'');
 source=source.replace(/import React[^\n]+\n/,`const useState=x=>[x,()=>{}],useSyncExternalStore=(_,get)=>get();
 const React={createElement:(type,props,...children)=>typeof type==='function'?type({...props,children}):({type,props:props||{},children:children.flat()})};\n`);
 source=source.replace(/import \{View[^\n]+\n/,`const View='View',Text='Text',Pressable='Pressable',ScrollView='ScrollView',StatusBar='StatusBar';const StyleSheet={create:x=>x},useWindowDimensions=()=>({width:360,height:720});\n`);
