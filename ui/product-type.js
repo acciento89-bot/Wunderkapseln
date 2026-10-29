@@ -2,6 +2,9 @@ import React, { createContext, forwardRef, useContext } from 'react';
 import { ActivityIndicator, StyleSheet, Text as NativeText, TextInput as NativeTextInput, View } from 'react-native';
 import { useFonts } from 'expo-font';
 
+// Bundle the original font license as a local asset alongside the font files.
+require('../assets/fonts/overlock/OFL.txt');
+
 const Ready = createContext(false);
 const fontAssets = {
   overlockRegular: require('../assets/fonts/overlock/Overlock-Regular.ttf'),
