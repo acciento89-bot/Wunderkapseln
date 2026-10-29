@@ -1,5 +1,6 @@
+import { Text } from './product-type.js';
 import React,{useState,useSyncExternalStore} from 'react';
-import {View,Text,Pressable,ScrollView,StyleSheet,useWindowDimensions,StatusBar} from 'react-native';
+import {View,Pressable,ScrollView,StyleSheet,useWindowDimensions,StatusBar} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {SvgXml} from 'react-native-svg';
 import {RESCUE_LEVELS} from '../core/rescue-levels.mjs';
