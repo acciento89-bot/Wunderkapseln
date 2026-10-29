@@ -1,0 +1,59 @@
+name: WonderCaps Android identity candidate (manual, unsigned, no store upload)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: wondercaps-android-identity-candidate
+  cancel-in-progress: false
+jobs:
+  candidate:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && github.repository == 'acciento89-bot/Wunderkapseln'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with: {node-version: '24', cache: npm}
+      - uses: actions/setup-java@v5
+        with: {distribution: temurin, java-version: '17'}
+      - uses: android-actions/setup-android@v3
+        with: {packages: platform-tools}
+      - name: Validate existing source before native preparation
+        run: |
+          set -euo pipefail
+          npm test
+          npm run check:docs
+          npm run check:build -- --source-only
+          node - <<'NODE'
+          const a = require('./app.json').expo;
+          if (a.version !== '0.7.0' || a.android.versionCode !== 11 || a.android.package !== 'com.kamilunavo.wunderkapseln') throw new Error('Wrong Android candidate identity');
+          NODE
+      - name: Install the existing immutable SDK55 lock
+        run: npm run native:install
+      - name: Generate only Android with unchanged approved assets
+        run: |
+          set -euo pipefail
+          node node_modules/expo/bin/cli prebuild --platform android --no-install
+          python3 .github/wondercaps-release/prepare_unsigned.py android/app/build.gradle
+          git diff --exit-code -- assets package-lock.json package.json app.json
+      - name: Build one unsigned Android candidate
+        env:
+          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx1536m
+          CMAKE_BUILD_PARALLEL_LEVEL: '1'
+        run: |
+          set -euo pipefail
+          ./android/gradlew -p android --no-daemon --max-workers=1 bundleRelease
+          mkdir candidate
+          cp android/app/build/outputs/bundle/release/app-release.aab candidate/app-release.aab
+          printf '%s\n' "$GITHUB_SHA" > candidate/source-commit.txt
+          (cd candidate && sha256sum app-release.aab > app-release.aab.sha256)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WonderCaps-0.7.0-11-unsigned-release-aab
+          path: candidate/
+          if-no-files-found: error
+          retention-days: 30

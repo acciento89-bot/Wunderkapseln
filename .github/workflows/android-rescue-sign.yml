@@ -1,17 +1,13 @@
-name: Wunderkapseln Android 0.6 signed update (manual, no Play upload)
+name: WonderCaps Android 0.7.0 signed update (manual, no store upload)
 on:
   workflow_dispatch:
     inputs:
-      source_commit:
-        description: Exact reviewed rescue source commit of the successful native run
-        required: true
-        type: string
       source_run_id:
-        description: Successful rescue-branch native Android CI run for the source commit
+        description: Successful exact-main Android source run for this commit
         required: true
         type: string
       source_artifact_id:
-        description: Immutable internal 0.6.0 (10) native artifact from that run
+        description: Immutable unsigned 0.7.0 (11) artifact ID
         required: true
         type: string
       source_artifact_digest:
@@ -21,22 +17,22 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: wunderkapseln-published-android-signer
+  group: wondercaps-published-android-signer
   cancel-in-progress: false
 env:
   PACKAGE_NAME: com.kamilunavo.wunderkapseln
-  VERSION_CODE: '10'
-  VERSION_NAME: 0.6.0
+  VERSION_CODE: '11'
+  VERSION_NAME: 0.7.0
   BUNDLETOOL_URL: https://github.com/google/bundletool/releases/download/1.18.2/bundletool-all-1.18.2.jar
   BUNDLETOOL_SHA256: 378b5434cd1378bef6b2bc527b8c7f0ff2584b273830335bce54d6d0813c8584
   CENTRAL_SHA1: BCF2337D41E617C03BCAE698C09D1523654BD790
   CENTRAL_SHA256: 7985BD6B33711BACA7E6BA722C2B3870EBBC802F7DB4A7BC1206BDAE51C4D5D6
   SOURCE_RUN_ID: ${{ inputs.source_run_id }}
-  SOURCE_COMMIT: ${{ inputs.source_commit }}
+  SOURCE_COMMIT: ${{ github.sha }}
   SOURCE_ARTIFACT_ID: ${{ inputs.source_artifact_id }}
-  SOURCE_ARTIFACT_NAME: Wunderkapseln-INTERNAL-ONLY-AAB
+  SOURCE_ARTIFACT_NAME: WonderCaps-0.7.0-11-unsigned-release-aab
   SOURCE_ARTIFACT_DIGEST: ${{ inputs.source_artifact_digest }}
-  SOURCE_AAB_BASENAME: app-release.aab
+  SOURCE_AAB_ENTRY: app-release.aab
 jobs:
   prepare:
     if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && github.repository == 'acciento89-bot/Wunderkapseln'
@@ -50,17 +46,6 @@ jobs:
       aab_sha256: ${{ steps.verify.outputs.aab_sha256 }}
       payload_sha256: ${{ steps.verify.outputs.payload_sha256 }}
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        persist-credentials: false
-    - name: Verify source is integrated and production files match
-      shell: bash
-      run: |
-        set -euo pipefail
-        [[ "$SOURCE_COMMIT" =~ ^[a-f0-9]{40}$ ]]
-        git merge-base --is-ancestor "$SOURCE_COMMIT" HEAD
-        git diff --exit-code "$SOURCE_COMMIT" HEAD -- . ':!.github' ':!docs'
     - name: Verify immutable successful source and archive digest
       shell: bash
       env:
@@ -73,13 +58,20 @@ jobs:
         api="https://api.github.com/repos/$GITHUB_REPOSITORY"
         headers=(-H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
         curl -fsS "${headers[@]}" "$api/actions/runs/$SOURCE_RUN_ID" > "$RUNNER_TEMP/source-run.json"
-        jq -e --arg sha "$SOURCE_COMMIT" --arg repo "$GITHUB_REPOSITORY" --argjson run "$SOURCE_RUN_ID" '.id == $run and .path == ".github/workflows/verify.yml" and .event == "push" and .head_sha == $sha and .head_branch == "feature/rescue-chapter-20261021" and .status == "completed" and .conclusion == "success" and .repository.full_name == $repo and .head_repository.full_name == $repo' "$RUNNER_TEMP/source-run.json"
-        curl -fsS "${headers[@]}" "$api/actions/runs/$SOURCE_RUN_ID/jobs?per_page=100" > "$RUNNER_TEMP/source-jobs.json"
-        jq -e '.total_count <= 100 and ([.jobs[] | select(.name == "android-preview" and .status == "completed" and .conclusion == "success")] | length) == 1' "$RUNNER_TEMP/source-jobs.json"
+        jq -e --arg sha "$SOURCE_COMMIT" --arg repo "$GITHUB_REPOSITORY" --argjson run "$SOURCE_RUN_ID" '.id == $run and .path == ".github/workflows/android-identity-candidate.yml" and (.event == "workflow_dispatch") and .head_sha == $sha and .head_branch == "main" and .status == "completed" and .conclusion == "success" and .repository.full_name == $repo and .head_repository.full_name == $repo' "$RUNNER_TEMP/source-run.json"
         curl -fsS "${headers[@]}" "$api/actions/artifacts/$SOURCE_ARTIFACT_ID" > "$RUNNER_TEMP/source-artifact.json"
-        jq -e --arg digest "$SOURCE_ARTIFACT_DIGEST" --arg name "$SOURCE_ARTIFACT_NAME" --arg sha "$SOURCE_COMMIT" --argjson run "$SOURCE_RUN_ID" --argjson artifact "$SOURCE_ARTIFACT_ID" '.id == $artifact and .name == $name and .expired == false and .digest == $digest and .workflow_run.id == $run and .workflow_run.head_sha == $sha and .workflow_run.head_branch == "feature/rescue-chapter-20261021"' "$RUNNER_TEMP/source-artifact.json"
+        jq -e --arg digest "$SOURCE_ARTIFACT_DIGEST" --arg name "$SOURCE_ARTIFACT_NAME" --arg sha "$SOURCE_COMMIT" --argjson run "$SOURCE_RUN_ID" --argjson artifact "$SOURCE_ARTIFACT_ID" '.id == $artifact and .name == $name and .expired == false and .digest == $digest and .workflow_run.id == $run and .workflow_run.head_sha == $sha and .workflow_run.head_branch == "main"' "$RUNNER_TEMP/source-artifact.json"
         curl --fail --silent --show-error --location "${headers[@]}" "$api/actions/artifacts/$SOURCE_ARTIFACT_ID/zip" -o "$RUNNER_TEMP/source.zip"
         printf '%s  %s\n' "${SOURCE_ARTIFACT_DIGEST#sha256:}" "$RUNNER_TEMP/source.zip" | sha256sum --check --strict
+        python3 - <<'PYARCHIVE'
+        import os, pathlib, zipfile
+        with zipfile.ZipFile(pathlib.Path(os.environ['RUNNER_TEMP']) / 'source.zip') as z:
+            names = z.namelist()
+            assert len(names) == len(set(names)), 'Duplicate artifact entries'
+            assert all(n and not n.startswith('/') and '\\' not in n and all(p not in ('..', '.') for p in n.rstrip('/').split('/')) and '//' not in n and ':' not in n.split('/')[0] for n in names), 'Unsafe artifact path'
+            assert all(not i.flag_bits & 1 for i in z.infolist()), 'Encrypted artifact entries'
+            assert [n for n in names if n.lower().endswith('.aab')] == [os.environ['SOURCE_AAB_ENTRY']], 'Wrong exact AAB entry'
+        PYARCHIVE
     - uses: actions/download-artifact@v4
       with:
         artifact-ids: ${{ env.SOURCE_ARTIFACT_ID }}
@@ -97,19 +89,11 @@ jobs:
         root = pathlib.Path(os.environ['RUNNER_TEMP'])
         with zipfile.ZipFile(root / 'source.zip') as z:
             aabs = [n for n in z.namelist() if n.endswith('.aab')]
-            assert len(aabs) == 1 and aabs[0].split('/')[-1] == os.environ['SOURCE_AAB_BASENAME'], aabs
+            assert len(aabs) == 1 and aabs[0] == os.environ['SOURCE_AAB_ENTRY'], aabs
             data = z.read(aabs[0])
         downloaded = list((root / 'downloaded').rglob('*.aab'))
         assert len(downloaded) == 1 and downloaded[0].read_bytes() == data, 'Artifact download mismatch'
-        # Remove only the generated development JAR signature; preserve payload bytes.
-        signature = __import__('re').compile(r"META-INF/(?:MANIFEST\.MF|[^/]+\.(?:SF|RSA|DSA|EC)|SIG-[^/]+)$", __import__('re').I)
-        import io
-        with zipfile.ZipFile(io.BytesIO(data)) as source, zipfile.ZipFile('prepared/app-release.aab','w') as target:
-            assert len(source.namelist()) == len(set(source.namelist()))
-            for entry in source.infolist():
-                if not signature.fullmatch(entry.filename): target.writestr(entry, source.read(entry.filename))
-        with zipfile.ZipFile(io.BytesIO(data)) as source, zipfile.ZipFile('prepared/app-release.aab') as target:
-            assert {n:source.read(n) for n in source.namelist() if not signature.fullmatch(n)} == {n:target.read(n) for n in target.namelist()}
+        pathlib.Path('prepared/app-release.aab').write_bytes(data)
         PY
     - uses: actions/setup-java@v5
       with:
@@ -266,7 +250,7 @@ jobs:
     - name: Publish verified centrally signed AAB
       uses: actions/upload-artifact@v4
       with:
-        name: Wunderkapseln-${{ env.VERSION_NAME }}-${{ env.VERSION_CODE }}-central-signed-aab
+        name: WonderCaps-${{ env.VERSION_NAME }}-${{ env.VERSION_CODE }}-central-signed-aab
         path: release/
         if-no-files-found: error
         retention-days: 30
